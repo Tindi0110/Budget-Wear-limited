@@ -1,0 +1,22 @@
+# OS files
+.DS_Store
+Thumbs.db
+
+# Environment variables
+.env
+
+# Application databases
+*.sqlite3
+
+# Docker
+.docker/
+
+# IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Temporary files
+tmp/
+*.log
