@@ -1,6 +1,7 @@
 "use client";
 
 import { Plus, MapPin, Phone, Clock, Edit2, Trash2, Building2 } from "lucide-react";
+import { toast } from "sonner";
 
 const branches = [
   { id: "1", name: "Nairobi CBD", location: "Tom Mboya Street", type: "Thrift Store", status: "Open" },
@@ -28,10 +29,16 @@ export default function AdminBranches() {
                    <Building2 className="w-8 h-8" />
                 </div>
                 <div className="flex gap-2">
-                   <button className="p-2 text-gray-400 hover:text-indigo-600 hover:bg-indigo-50 rounded-xl transition-all">
+                   <button 
+                     onClick={() => toast.info("Edit Branch module opening...")}
+                     className="p-2 text-gray-400 hover:text-indigo-600 hover:bg-indigo-50 rounded-xl transition-all"
+                   >
                       <Edit2 className="w-4 h-4" />
                    </button>
-                   <button className="p-2 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-xl transition-all">
+                   <button 
+                     onClick={() => toast.error("Branch deleted")}
+                     className="p-2 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-xl transition-all"
+                   >
                       <Trash2 className="w-4 h-4" />
                    </button>
                 </div>

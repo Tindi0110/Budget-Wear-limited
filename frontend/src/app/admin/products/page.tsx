@@ -12,6 +12,7 @@ import {
   ExternalLink,
   Package 
 } from "lucide-react";
+import { toast } from "sonner";
 
 const products = [
   { id: "1", name: "Blue Denim Jacket", category: "Men", price: 2500, stock: 15, branch: "Nairobi", status: "In Stock" },
@@ -31,7 +32,7 @@ export default function AdminProducts() {
   };
 
   const confirmDelete = () => {
-    console.log("Deleting product:", productToDelete);
+    toast.success("Product deleted successfully");
     setShowDeleteModal(false);
     setProductToDelete(null);
   };
@@ -55,7 +56,10 @@ export default function AdminProducts() {
             <Filter className="w-4 h-4" />
             Filters
           </button>
-          <button className="flex items-center gap-2 px-4 py-2 bg-indigo-600 text-white rounded-xl hover:bg-indigo-700 transition-all font-medium shadow-md shadow-indigo-200 active:scale-95">
+          <button 
+            onClick={() => toast.info("Add Product module opening...")}
+            className="flex items-center gap-2 px-4 py-2 bg-indigo-600 text-white rounded-xl hover:bg-indigo-700 transition-all font-medium shadow-md shadow-indigo-200 active:scale-95"
+          >
             <Plus className="w-4 h-4" />
             Add Product
           </button>

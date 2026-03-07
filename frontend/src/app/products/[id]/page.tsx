@@ -14,6 +14,7 @@ import {
   Heart,
   Share2
 } from "lucide-react";
+import { toast } from "sonner";
 
 export default function ProductDetail() {
   const [quantity, setQuantity] = useState(1);
@@ -46,7 +47,10 @@ export default function ProductDetail() {
               High Quality Thrift
             </span>
             <div className="flex gap-2">
-              <button className="p-2 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-full transition-all">
+              <button 
+                onClick={() => toast.success("Added to favorites")}
+                className="p-2 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-full transition-all"
+              >
                 <Heart className="w-5 h-5" />
               </button>
               <button className="p-2 text-gray-400 hover:text-indigo-600 hover:bg-indigo-50 rounded-full transition-all">
@@ -103,7 +107,10 @@ export default function ProductDetail() {
                 </button>
               </div>
               
-              <button className="flex-1 bg-indigo-600 text-white h-12 rounded-xl font-bold flex items-center justify-center gap-2 hover:bg-indigo-700 transition-all shadow-lg shadow-indigo-200 active:scale-95">
+              <button 
+                onClick={() => toast.success("Added to cart!")}
+                className="flex-1 bg-indigo-600 text-white h-12 rounded-xl font-bold flex items-center justify-center gap-2 hover:bg-indigo-700 transition-all shadow-lg shadow-indigo-200 active:scale-95"
+              >
                 <ShoppingCart className="w-5 h-5" />
                 Add to Cart
               </button>

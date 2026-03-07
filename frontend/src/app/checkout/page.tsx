@@ -10,8 +10,10 @@ import {
   CheckCircle2,
   Calendar,
   User,
-  Phone
+  Phone,
+  ArrowRight
 } from "lucide-react";
+import { toast } from "sonner";
 
 export default function CheckoutPage() {
   const [step, setStep] = useState(1);
@@ -118,7 +120,16 @@ export default function CheckoutPage() {
                 </div>
               </div>
 
-              <button className="w-full mt-10 bg-indigo-600 text-white h-16 rounded-3xl font-black flex items-center justify-center gap-3 hover:bg-black transition-all shadow-xl shadow-indigo-100 group active:scale-95">
+              <button 
+                onClick={() => {
+                  toast.promise(new Promise(resolve => setTimeout(resolve, 2000)), {
+                    loading: 'Sending STK Push...',
+                    success: 'Payment Request Sent!',
+                    error: 'Failed to send request',
+                  });
+                }}
+                className="w-full mt-10 bg-indigo-600 text-white h-16 rounded-3xl font-black flex items-center justify-center gap-3 hover:bg-black transition-all shadow-xl shadow-indigo-100 group active:scale-95"
+              >
                 Pay with M-Pesa
                 <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
               </button>
@@ -132,25 +143,5 @@ export default function CheckoutPage() {
         </div>
       </div>
     </div>
-  );
-}
-
-function ArrowRight(props: any) {
-  return (
-    <svg 
-      {...props}
-      xmlns="http://www.w3.org/2000/svg" 
-      width="24" 
-      height="24" 
-      viewBox="0 0 24 24" 
-      fill="none" 
-      stroke="currentColor" 
-      strokeWidth="2" 
-      strokeLinecap="round" 
-      strokeLinejoin="round"
-    >
-      <path d="M5 12h14" />
-      <path d="m12 5 7 7-7 7" />
-    </svg>
   );
 }

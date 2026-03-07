@@ -9,6 +9,7 @@ import {
   ShoppingBag,
   Info
 } from "lucide-react";
+import { toast } from "sonner";
 
 export default function CartPage() {
   return (
@@ -40,7 +41,10 @@ export default function CartPage() {
                     <span className="w-8 text-center font-bold text-gray-900">1</span>
                     <button className="p-2 text-gray-400 hover:text-indigo-600"><Plus className="w-4 h-4" /></button>
                   </div>
-                  <button className="flex items-center gap-1.5 text-sm text-red-500 font-bold hover:bg-red-50 px-3 py-1.5 rounded-lg transition-colors">
+                  <button 
+                    onClick={() => toast.success("Item removed from cart")}
+                    className="flex items-center gap-1.5 text-sm text-red-500 font-bold hover:bg-red-50 px-3 py-1.5 rounded-lg transition-colors"
+                  >
                     <Trash2 className="w-4 h-4" />
                     Remove
                   </button>

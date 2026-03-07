@@ -1,6 +1,7 @@
 "use client";
 
 import { Plus, Search, Edit2, Trash2, Folder } from "lucide-react";
+import { toast } from "sonner";
 
 const categories = [
   { id: "1", name: "Men", icon: "Shirt", items: 45 },
@@ -29,10 +30,16 @@ export default function AdminCategories() {
                    <Folder className="w-7 h-7" />
                 </div>
                 <div className="flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                   <button className="p-2 text-gray-400 hover:text-indigo-600 hover:bg-indigo-50 rounded-xl transition-all">
+                   <button 
+                     onClick={() => toast.info("Edit Category module opening...")}
+                     className="p-2 text-gray-400 hover:text-indigo-600 hover:bg-indigo-50 rounded-xl transition-all"
+                   >
                       <Edit2 className="w-4 h-4" />
                    </button>
-                   <button className="p-2 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-xl transition-all">
+                   <button 
+                     onClick={() => toast.error("Category deleted")}
+                     className="p-2 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-xl transition-all"
+                   >
                       <Trash2 className="w-4 h-4" />
                    </button>
                 </div>

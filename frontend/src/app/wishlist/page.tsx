@@ -8,6 +8,7 @@ import {
   ArrowRight,
   Package 
 } from "lucide-react";
+import { toast } from "sonner";
 
 const wishlistItems = [
   { id: "1", name: "Premium Denim Jacket", price: 2500, branch: "Nairobi", image: "https://placehold.co/200x200/png" },
@@ -27,14 +28,20 @@ export default function WishlistPage() {
             <div key={item.id} className="group bg-white rounded-[2rem] border border-gray-100 shadow-sm overflow-hidden hover:shadow-xl transition-all">
               <div className="aspect-[4/5] relative">
                 <img src={item.image} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" />
-                <button className="absolute top-4 right-4 p-2 bg-white/80 backdrop-blur-md rounded-full text-red-500 hover:bg-red-50 transition-all">
+                <button 
+                  onClick={() => toast.error("Removed from wishlist")}
+                  className="absolute top-4 right-4 p-2 bg-white/80 backdrop-blur-md rounded-full text-red-500 hover:bg-red-50 transition-all"
+                >
                   <Trash2 className="w-4 h-4" />
                 </button>
               </div>
               <div className="p-6">
                  <h3 className="font-bold text-gray-900 line-clamp-1">{item.name}</h3>
                  <p className="text-indigo-600 font-black mt-1">Ksh {item.price.toLocaleString()}</p>
-                 <button className="w-full mt-6 bg-black text-white py-3 rounded-xl font-bold flex items-center justify-center gap-2 hover:bg-indigo-600 transition-all">
+                 <button 
+                   onClick={() => toast.success("Added to cart from wishlist!")}
+                   className="w-full mt-6 bg-black text-white py-3 rounded-xl font-bold flex items-center justify-center gap-2 hover:bg-indigo-600 transition-all"
+                 >
                    <ShoppingBag className="w-4 h-4" />
                    Add to Cart
                  </button>
