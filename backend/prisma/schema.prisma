@@ -1,0 +1,70 @@
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model Branch {
+  id         String    @id @default(uuid())
+  name       String
+  location   String
+  type       String    // "thrift_store" or "baby_shop"
+  created_at DateTime  @default(now())
+  
+  products   Product[]
+  orders     Order[]
+}
+
+model Category {
+  id       String    @id @default(uuid())
+  name     String
+  icon     String?
+  products Product[]
+}
+
+model Product {
+  id          String         @id @default(uuid())
+  name        String
+  price       Float
+  description String
+  stock       Int            @default(0)
+  created_at  DateTime       @default(now())
+  
+  branch_id   String
+  branch      Branch         @relation(fields: [branch_id], references: [id])
+  
+  category_id String
+  category    Category       @relation(fields: [category_id], references: [id])
+  
+  images      ProductImage[]
+  wishlists   Wishlist[]
+}
+
+model ProductImage {
+  id         String   @id @default(uuid())
+  product_id String
+  product    Product  @relation(fields: [product_id], references: [id], onDelete: Cascade)
+  image_url  String
+  position   Int      @default(0)
+}
+
+model Order {
+  id            String   @id @default(uuid())
+  customer_name String
+  total         Float
+  status        String   @default("PENDING")
+  created_at    DateTime @default(now())
+  
+  branch_id     String
+  branch        Branch   @relation(fields: [branch_id], references: [id])
+}
+
+model Wishlist {
+  id         String   @id @default(uuid())
+  user_id    String   // Simulated user ID for MVP
+  product_id String
+  product    Product  @relation(fields: [product_id], references: [id], onDelete: Cascade)
+}
