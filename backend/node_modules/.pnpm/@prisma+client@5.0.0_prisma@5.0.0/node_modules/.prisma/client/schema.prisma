@@ -7,6 +7,19 @@ generator client {
   provider = "prisma-client-js"
 }
 
+model User {
+  id         String    @id @default(uuid())
+  email      String    @unique
+  password   String
+  name       String
+  role       String    @default("CUSTOMER") // "SUPERADMIN", "BRANCH_ADMIN", "BRANCH_STAFF", "CUSTOMER"
+  created_at DateTime  @default(now())
+
+  branch_id  String?
+  branch     Branch?   @relation(fields: [branch_id], references: [id])
+  orders     Order[]
+}
+
 model Branch {
   id         String    @id @default(uuid())
   name       String
@@ -16,6 +29,7 @@ model Branch {
   
   products   Product[]
   orders     Order[]
+  staff      User[]
 }
 
 model Category {
@@ -41,6 +55,7 @@ model Product {
   
   images      ProductImage[]
   wishlists   Wishlist[]
+  order_items OrderItem[]
 }
 
 model ProductImage {
@@ -52,14 +67,28 @@ model ProductImage {
 }
 
 model Order {
-  id            String   @id @default(uuid())
-  customer_name String
+  id            String      @id @default(uuid())
+  customer_name String?
   total         Float
-  status        String   @default("PENDING")
-  created_at    DateTime @default(now())
+  status        String      @default("PENDING")
+  created_at    DateTime    @default(now())
   
   branch_id     String
-  branch        Branch   @relation(fields: [branch_id], references: [id])
+  branch        Branch      @relation(fields: [branch_id], references: [id])
+
+  user_id       String?
+  user          User?       @relation(fields: [user_id], references: [id])
+  items         OrderItem[]
+}
+
+model OrderItem {
+  id         String   @id @default(uuid())
+  order_id   String
+  order      Order    @relation(fields: [order_id], references: [id], onDelete: Cascade)
+  product_id String
+  product    Product  @relation(fields: [product_id], references: [id])
+  quantity   Int
+  price      Float    // Price at time of purchase
 }
 
 model Wishlist {

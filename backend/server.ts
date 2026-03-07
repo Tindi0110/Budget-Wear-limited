@@ -4,6 +4,9 @@ import dotenv from "dotenv";
 import branchRoutes from "./src/routes/branchRoutes";
 import categoryRoutes from "./src/routes/categoryRoutes";
 import productRoutes from "./src/routes/productRoutes";
+import userRoutes from "./src/routes/userRoutes";
+import orderRoutes from "./src/routes/orderRoutes";
+import wishlistRoutes from "./src/routes/wishlistRoutes";
 
 dotenv.config();
 
@@ -16,6 +19,9 @@ app.use(express.json());
 app.use("/api/branches", branchRoutes);
 app.use("/api/categories", categoryRoutes);
 app.use("/api/products", productRoutes);
+app.use("/api/users", userRoutes);
+app.use("/api/orders", orderRoutes);
+app.use("/api/wishlist", wishlistRoutes);
 
 app.get("/", (req, res) => {
     res.json({ message: "Welcome to Budget Wear Limited API" });
