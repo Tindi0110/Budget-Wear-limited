@@ -387,19 +387,21 @@ export default function Home() {
             <div className="space-y-6">
                <h5 className="font-bold text-lg">BRANCHES</h5>
                <ul className="space-y-4 text-gray-500 font-medium">
-                  <li className="hover:text-white cursor-pointer transition-colors">Nairobi CBD</li>
-                  <li className="hover:text-white cursor-pointer transition-colors">Nakuru Town</li>
-                  <li className="hover:text-white cursor-pointer transition-colors">Mombasa Nyali</li>
-                  <li className="hover:text-white cursor-pointer transition-colors">Eldoret Town</li>
+                  <li><Link href="/branches" className="hover:text-white transition-colors">Nairobi CBD</Link></li>
+                  <li><Link href="/branches" className="hover:text-white transition-colors">Nakuru Town</Link></li>
+                  <li><Link href="/branches" className="hover:text-white transition-colors">Mombasa Nyali</Link></li>
+                  <li><Link href="/branches" className="hover:text-white transition-colors">Eldoret Town</Link></li>
+                  <li><Link href="/baby-shop" className="text-pink-500 hover:text-pink-400 font-black transition-colors">Special: Baby Shop</Link></li>
                </ul>
             </div>
             <div className="space-y-6">
                <h5 className="font-bold text-lg">CUSTOMER CARE</h5>
                <ul className="space-y-4 text-gray-500 font-medium">
-                  <li className="hover:text-white cursor-pointer transition-colors">Contact Us</li>
-                  <li className="hover:text-white cursor-pointer transition-colors">Delivery Info</li>
-                  <li className="hover:text-white cursor-pointer transition-colors">Returns & Exchanges</li>
-                  <li className="hover:text-white cursor-pointer transition-colors">Store Locator</li>
+                  <li><Link href="/contact" className="hover:text-white transition-colors">Contact Us</Link></li>
+                  <li><Link href="/delivery" className="hover:text-white transition-colors">Delivery Info</Link></li>
+                  <li><Link href="/returns" className="hover:text-white transition-colors">Returns & Exchanges</Link></li>
+                  <li><Link href="/branches" className="hover:text-white transition-colors">Store Locator</Link></li>
+                  <li><Link href="/admin" className="text-indigo-400 hover:text-indigo-300 font-black transition-colors underline decoration-2 underline-offset-4">Admin Dashboard</Link></li>
                </ul>
             </div>
          </div>

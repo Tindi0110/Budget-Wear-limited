@@ -16,8 +16,9 @@ import {
 } from "lucide-react";
 import { toast } from "sonner";
 
-export default function ProductDetail() {
+export default function ProductDetail({ params }: { params: { id: string } }) {
   const [quantity, setQuantity] = useState(1);
+  const productId = params.id;
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 animate-in fade-in slide-in-from-bottom-4 duration-700">

@@ -51,7 +51,7 @@ export default function AdminDashboard() {
         <div className="lg:col-span-2 bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
           <div className="p-6 border-b border-gray-50 flex items-center justify-between">
             <h3 className="font-bold text-gray-900">Recent Orders</h3>
-            <button className="text-sm font-medium text-indigo-600 hover:text-indigo-700">View all</button>
+            <Link href="/admin/orders" className="text-sm font-medium text-indigo-600 hover:text-indigo-700">View all</Link>
           </div>
           <div className="overflow-x-auto">
             <table className="w-full text-left border-collapse">
