@@ -4,10 +4,10 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "build": "prisma generate && tsc",
+    "dev": "ts-node src/server.ts",
+    "build": "tsc",
     "start": "node dist/server.js",
-    "dev": "nodemon server.ts",
-    "postinstall": "prisma generate"
+    "prisma:generate": "prisma generate"
   },
   "keywords": [],
   "author": "",

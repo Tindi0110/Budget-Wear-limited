@@ -1,12 +1,12 @@
 import express from "express";
 import cors from "cors";
 import dotenv from "dotenv";
-import branchRoutes from "./src/routes/branchRoutes";
-import categoryRoutes from "./src/routes/categoryRoutes";
-import productRoutes from "./src/routes/productRoutes";
-import userRoutes from "./src/routes/userRoutes";
-import orderRoutes from "./src/routes/orderRoutes";
-import wishlistRoutes from "./src/routes/wishlistRoutes";
+import branchRoutes from "./routes/branchRoutes";
+import categoryRoutes from "./routes/categoryRoutes";
+import productRoutes from "./routes/productRoutes";
+import userRoutes from "./routes/userRoutes";
+import orderRoutes from "./routes/orderRoutes";
+import wishlistRoutes from "./routes/wishlistRoutes";
 
 dotenv.config();
 
