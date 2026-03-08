@@ -1,20 +1,22 @@
 services:
-  # Backend Service
+  # Backend Service (Django)
   - type: web
     name: budget-wear-limited-backend
-    env: node
+    env: python
     rootDir: backend
-    buildCommand: npm install && npm run build
-    startCommand: npm start
+    buildCommand: pip install -r requirements.txt && python manage.py collectstatic --noinput && python manage.py migrate
+    startCommand: gunicorn budget_wear_project.wsgi
     envVars:
-      - key: NODE_VERSION
-        value: 18
+      - key: PYTHON_VERSION
+        value: 3.12.2
       - key: DATABASE_URL
         sync: false
       - key: JWT_SECRET
         generateValue: true
       - key: PORT
         value: 5000
+      - key: DEBUG
+        value: False
 
   # Frontend Service
   - type: web
