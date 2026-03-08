@@ -25,6 +25,8 @@ export default function AdminProducts() {
   const [searchTerm, setSearchTerm] = useState("");
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [productToDelete, setProductToDelete] = useState<string | null>(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [editingProduct, setEditingProduct] = useState<any>(null);
 
   const handleDeleteClick = (id: string) => {
     setProductToDelete(id);
@@ -57,7 +59,7 @@ export default function AdminProducts() {
             Filters
           </button>
           <button 
-            onClick={() => toast.info("Add Product module opening...")}
+            onClick={() => { setEditingProduct(null); setIsModalOpen(true); }}
             className="flex items-center gap-2 px-4 py-2 bg-indigo-600 text-white rounded-xl hover:bg-indigo-700 transition-all font-medium shadow-md shadow-indigo-200 active:scale-95"
           >
             <Plus className="w-4 h-4" />
@@ -122,24 +124,25 @@ export default function AdminProducts() {
                     </span>
                   </td>
                   <td className="px-6 py-4 text-right">
-                    <div className="flex items-center justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                      <button className="p-2 text-gray-400 hover:text-indigo-600 hover:bg-indigo-50 rounded-lg transition-all" title="View details">
+                    <div className="flex items-center justify-end gap-2 transition-all">
+                      <button className="p-2 text-gray-500 hover:text-indigo-600 hover:bg-indigo-50 rounded-lg transition-all" title="View details">
                         <Eye className="w-4 h-4" />
                       </button>
-                      <button className="p-2 text-gray-400 hover:text-indigo-600 hover:bg-indigo-50 rounded-lg transition-all" title="Edit product">
+                      <button 
+                        className="p-2 text-gray-500 hover:text-indigo-600 hover:bg-indigo-50 rounded-lg transition-all" 
+                        title="Edit product"
+                        onClick={() => { setEditingProduct(product); setIsModalOpen(true); }}
+                      >
                         <Edit2 className="w-4 h-4" />
                       </button>
                       <button 
-                        className="p-2 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-all" 
+                        className="p-2 text-gray-500 hover:text-red-600 hover:bg-red-50 rounded-lg transition-all" 
                         title="Delete product"
                         onClick={() => handleDeleteClick(product.id)}
                       >
                         <Trash2 className="w-4 h-4" />
                       </button>
                     </div>
-                    <button className="p-2 text-gray-400 group-hover:hidden">
-                       <MoreVertical className="w-4 h-4" />
-                    </button>
                   </td>
                 </tr>
               ))}
@@ -159,6 +162,82 @@ export default function AdminProducts() {
           </div>
         </div>
       </div>
+
+      {/* Add/Edit Product Modal */}
+      {isModalOpen && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/50 backdrop-blur-md p-4 animate-in fade-in duration-300">
+          <div className="bg-white w-full max-w-2xl rounded-[3rem] shadow-2xl overflow-hidden animate-in zoom-in-95 duration-500">
+            <div className="p-8 border-b border-gray-50 flex items-center justify-between bg-gray-50/50">
+              <h3 className="text-2xl font-black text-gray-900 tracking-tighter uppercase">
+                {editingProduct ? 'Edit Product' : 'Add New Product'}
+              </h3>
+              <button onClick={() => setIsModalOpen(false)} className="text-gray-400 hover:text-black font-black">X</button>
+            </div>
+            
+            <form className="p-8 grid grid-cols-2 gap-6" onSubmit={(e) => { e.preventDefault(); setIsModalOpen(false); toast.success(editingProduct ? "Product updated" : "Product created"); }}>
+              <div className="col-span-2 space-y-2">
+                <label className="text-[10px] font-black uppercase tracking-widest text-gray-400 px-1">Product Name</label>
+                <input 
+                  type="text" 
+                  defaultValue={editingProduct?.name || ''}
+                  placeholder="e.g. Vintage Oversized Hoodie" 
+                  className="w-full h-14 px-4 bg-gray-50 border border-gray-100 rounded-2xl focus:bg-white focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all font-bold"
+                  required
+                />
+              </div>
+
+              <div className="space-y-2">
+                <label className="text-[10px] font-black uppercase tracking-widest text-gray-400 px-1">Price (Ksh)</label>
+                <input 
+                  type="number" 
+                  defaultValue={editingProduct?.price || ''}
+                  className="w-full h-14 px-4 bg-gray-50 border border-gray-100 rounded-2xl focus:bg-white focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all font-bold"
+                  required
+                />
+              </div>
+
+              <div className="space-y-2">
+                <label className="text-[10px] font-black uppercase tracking-widest text-gray-400 px-1">Stock Quantity</label>
+                <input 
+                  type="number" 
+                  defaultValue={editingProduct?.stock || ''}
+                  className="w-full h-14 px-4 bg-gray-50 border border-gray-100 rounded-2xl focus:bg-white focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all font-bold"
+                  required
+                />
+              </div>
+
+              <div className="space-y-2">
+                <label className="text-[10px] font-black uppercase tracking-widest text-gray-400 px-1">Category</label>
+                <select className="w-full h-14 px-4 bg-gray-50 border border-gray-100 rounded-2xl focus:bg-white focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all font-bold">
+                   <option>Men</option>
+                   <option>Women</option>
+                   <option>Kids</option>
+                   <option>Shoes</option>
+                </select>
+              </div>
+
+              <div className="space-y-2">
+                <label className="text-[10px] font-black uppercase tracking-widest text-gray-400 px-1">Branch</label>
+                <select className="w-full h-14 px-4 bg-gray-50 border border-gray-100 rounded-2xl focus:bg-white focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all font-bold">
+                   <option>Nairobi</option>
+                   <option>Nakuru</option>
+                   <option>Mombasa</option>
+                   <option>Eldoret</option>
+                </select>
+              </div>
+
+              <div className="col-span-2 py-4">
+                <button 
+                  type="submit"
+                  className="w-full py-5 bg-black text-white rounded-2xl font-black text-lg hover:bg-indigo-600 transition-all shadow-xl shadow-gray-200 uppercase tracking-tighter"
+                >
+                  {editingProduct ? 'Update Product' : 'Save Product'}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
 
       {/* Delete Confirmation Modal */}
       {showDeleteModal && (

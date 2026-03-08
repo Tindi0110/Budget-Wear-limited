@@ -9,8 +9,11 @@ import {
   MoreVertical,
   CheckCircle,
   XCircle,
-  Truck
+  Truck,
+  X
 } from "lucide-react";
+import { useState } from "react";
+import { toast } from "sonner";
 
 const orders = [
   { id: "ORD-2024-001", customer: "Jane Smith", branch: "Nairobi", total: 4500, status: "Delivered", date: "2024-03-07 14:30" },
@@ -34,6 +37,8 @@ const statusIcons = {
 };
 
 export default function AdminOrders() {
+  const [selectedOrder, setSelectedOrder] = useState<any>(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
   return (
     <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
       <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
@@ -84,7 +89,11 @@ export default function AdminOrders() {
                     </span>
                   </td>
                   <td className="px-6 py-4 text-right">
-                    <button className="text-gray-400 hover:text-indigo-600 p-2 hover:bg-indigo-50 rounded-lg transition-all" title="View details">
+                    <button 
+                      onClick={() => { setSelectedOrder(order); setIsModalOpen(true); }}
+                      className="text-gray-400 hover:text-indigo-600 p-2 hover:bg-indigo-50 rounded-lg transition-all" 
+                      title="View details"
+                    >
                       <ChevronRight className="w-4 h-4" />
                     </button>
                   </td>
@@ -94,6 +103,79 @@ export default function AdminOrders() {
           </table>
         </div>
       </div>
+
+      {/* Order Details Modal */}
+      {isModalOpen && selectedOrder && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/40 backdrop-blur-md p-4 animate-in fade-in duration-300">
+          <div className="bg-white w-full max-w-2xl rounded-[3rem] shadow-2xl overflow-hidden animate-in zoom-in-95 duration-500">
+            <div className="p-8 border-b border-gray-50 flex items-center justify-between bg-gray-50/50">
+              <div className="flex items-center gap-4">
+                 <div className="w-12 h-12 bg-indigo-600 text-white rounded-2xl flex items-center justify-center shadow-lg shadow-indigo-100">
+                    <ShoppingBag className="w-6 h-6" />
+                 </div>
+                 <div>
+                    <h3 className="text-2xl font-black text-gray-900 tracking-tighter uppercase">{selectedOrder.id}</h3>
+                    <p className="text-[10px] text-gray-500 font-bold uppercase tracking-widest">{selectedOrder.date}</p>
+                 </div>
+              </div>
+              <button onClick={() => setIsModalOpen(false)} className="w-10 h-10 rounded-full hover:bg-white flex items-center justify-center text-gray-400 hover:text-black transition-all">
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+            
+            <div className="p-10 space-y-8">
+               <div className="grid grid-cols-2 gap-8">
+                  <div className="space-y-1">
+                     <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Customer Information</p>
+                     <p className="text-lg font-black text-gray-900">{selectedOrder.customer}</p>
+                     <p className="text-sm text-gray-500 font-medium">customer@example.com</p>
+                  </div>
+                  <div className="space-y-1">
+                     <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Shipping Location</p>
+                     <p className="text-lg font-black text-gray-900">{selectedOrder.branch} Branch</p>
+                     <p className="text-sm text-gray-500 font-medium">Main pickup station</p>
+                  </div>
+               </div>
+
+               <div className="bg-gray-50 rounded-3xl p-6">
+                  <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-4">Ordered Items</p>
+                  <div className="space-y-4">
+                     <div className="flex justify-between items-center text-sm font-bold text-gray-900">
+                        <span>Blue Denim Jacket x 1</span>
+                        <span>Ksh 2,500</span>
+                     </div>
+                     <div className="flex justify-between items-center text-sm font-bold text-gray-900">
+                        <span>Black Cargo Pants x 1</span>
+                        <span>Ksh 1,800</span>
+                     </div>
+                     <div className="flex justify-between items-center text-sm font-black text-indigo-600 pt-4 border-t border-gray-200 text-base">
+                        <span>TOTAL</span>
+                        <span>Ksh {selectedOrder.total.toLocaleString()}</span>
+                     </div>
+                  </div>
+               </div>
+
+               <div className="flex items-center justify-between gap-6">
+                  <div className="flex-1 space-y-3">
+                     <label className="text-[10px] font-black uppercase tracking-widest text-gray-400">Update Order Status</label>
+                     <select className="w-full h-14 px-6 bg-gray-50 border border-gray-100 rounded-[1.5rem] focus:bg-white focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-500 transition-all font-bold text-sm">
+                        <option>Pending</option>
+                        <option>In Transit</option>
+                        <option>Delivered</option>
+                        <option>Cancelled</option>
+                     </select>
+                  </div>
+                  <button 
+                    onClick={() => { setIsModalOpen(false); toast.success("Order status successfully updated!"); }}
+                    className="h-14 px-8 bg-black text-white rounded-2xl font-black text-xs uppercase tracking-widest hover:bg-indigo-600 transition-all shadow-xl mt-6"
+                  >
+                     Apply Update
+                  </button>
+               </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

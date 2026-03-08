@@ -8,8 +8,14 @@ import {
   TrendingUp, 
   ArrowUpRight,
   ArrowDownRight,
-  Clock
+  Clock,
+  CheckCircle,
+  Truck,
+  XCircle,
+  X
 } from "lucide-react";
+import { useState } from "react";
+import { toast } from "sonner";
 
 const stats = [
   { name: "Total Revenue", value: "Ksh 45,280", icon: TrendingUp, change: "+12.5%", trend: "up" },
@@ -19,6 +25,16 @@ const stats = [
 ];
 
 export default function AdminDashboard() {
+  const [selectedOrder, setSelectedOrder] = useState<any>(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
+  const recentOrders = [
+    { id: "ORD-2024-1", customer: "John Doe", email: "john@example.com", status: "Pending", total: 2450, date: "2024-03-07 15:30", branch: "Nairobi" },
+    { id: "ORD-2024-2", customer: "Jane Smith", email: "jane@example.com", status: "Delivered", total: 4500, date: "2024-03-07 14:30", branch: "Nairobi" },
+    { id: "ORD-2024-3", customer: "Mike Ross", email: "mike@example.com", status: "In Transit", total: 1800, date: "2024-03-07 12:45", branch: "Nakuru" },
+    { id: "ORD-2024-4", customer: "Harvey Specter", email: "harvey@example.com", status: "Pending", total: 6700, date: "2024-03-07 10:20", branch: "Mombasa" },
+    { id: "ORD-2024-5", customer: "Rachel Zane", email: "rachel@example.com", status: "Delivered", total: 3200, date: "2024-03-07 09:15", branch: "Nairobi" },
+  ];
   return (
     <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
       {/* Stats Grid */}
@@ -65,23 +81,36 @@ export default function AdminDashboard() {
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-50">
-                {[1, 2, 3, 4, 5].map((i) => (
-                  <tr key={i} className="hover:bg-gray-50/50 transition-colors cursor-pointer group">
-                    <td className="px-6 py-4 text-sm font-medium text-gray-700 font-mono">#ORD-2024-{i}</td>
+                {recentOrders.map((order) => (
+                  <tr 
+                    key={order.id} 
+                    onClick={() => { setSelectedOrder(order); setIsModalOpen(true); }}
+                    className="hover:bg-gray-50/50 transition-colors cursor-pointer group"
+                  >
+                    <td className="px-6 py-4 text-sm font-medium text-gray-700 font-mono">{order.id}</td>
                     <td className="px-6 py-4">
                       <div className="flex items-center gap-3">
                         <div className="w-8 h-8 rounded-full bg-indigo-100 flex items-center justify-center text-indigo-700 font-bold text-xs">
-                          JD
+                          {order.customer.split(' ').map(n => n[0]).join('')}
                         </div>
-                        <span className="text-sm text-gray-900 font-medium">John Doe</span>
+                        <span className="text-sm text-gray-900 font-medium">{order.customer}</span>
                       </div>
                     </td>
                     <td className="px-6 py-4">
-                      <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">
-                        Pending
+                      <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
+                        order.status === "Delivered" ? "bg-green-100 text-green-800" :
+                        order.status === "Pending" ? "bg-yellow-100 text-yellow-800" :
+                        "bg-blue-100 text-blue-800"
+                      }`}>
+                        {order.status}
                       </span>
                     </td>
-                    <td className="px-6 py-4 text-sm font-bold text-gray-900">Ksh 2,450</td>
+                    <td className="px-6 py-4 text-sm font-bold text-gray-900">
+                      <div className="flex items-center justify-between">
+                        <span>Ksh {order.total.toLocaleString()}</span>
+                        <ChevronRight className="w-4 h-4 text-gray-400 group-hover:text-indigo-600 transition-colors" />
+                      </div>
+                    </td>
                   </tr>
                 ))}
               </tbody>

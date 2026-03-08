@@ -1,8 +1,8 @@
 from rest_framework import viewsets, permissions, filters
-from .models import User, Branch, Category, Product, ProductImage, Order, OrderItem, Wishlist
+from .models import User, Branch, Category, Product, ProductImage, Order, OrderItem, Wishlist, Advertisement
 from .serializers import (
     UserSerializer, BranchSerializer, CategorySerializer, 
-    ProductSerializer, OrderSerializer, WishlistSerializer
+    ProductSerializer, OrderSerializer, WishlistSerializer, AdvertisementSerializer
 )
 
 class UserViewSet(viewsets.ModelViewSet):
@@ -31,6 +31,10 @@ class OrderViewSet(viewsets.ModelViewSet):
 class WishlistViewSet(viewsets.ModelViewSet):
     queryset = Wishlist.objects.all()
     serializer_class = WishlistSerializer
+
+class AdvertisementViewSet(viewsets.ModelViewSet):
+    queryset = Advertisement.objects.all().order_by('position', '-created_at')
+    serializer_class = AdvertisementSerializer
 
 # M-Pesa Integration View
 from rest_framework.views import APIView

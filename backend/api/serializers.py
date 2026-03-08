@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import User, Branch, Category, Product, ProductImage, Order, OrderItem, Wishlist
+from .models import User, Branch, Category, Product, ProductImage, Order, OrderItem, Wishlist, Advertisement
 
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
@@ -50,4 +50,9 @@ class WishlistSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Wishlist
+        fields = '__all__'
+
+class AdvertisementSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Advertisement
         fields = '__all__'

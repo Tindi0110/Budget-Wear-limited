@@ -98,30 +98,30 @@ export default function ProductsPage() {
               <p className="text-sm font-bold text-gray-400">{filteredProducts.length} Results Found</p>
             </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+            <div className="grid grid-cols-2 lg:grid-cols-4 gap-6">
               {filteredProducts.map((p) => (
-                <Link key={p.id} href={`/products/${p.id}`} className="group cursor-pointer">
-                  <div className="aspect-[3/4] bg-gray-50 rounded-[2.5rem] overflow-hidden mb-6 relative shadow-sm transition-all duration-500 hover:shadow-xl hover:shadow-gray-100">
+                <div key={p.id} className="group cursor-pointer">
+                  <div className="aspect-[3/4] bg-gray-50 rounded-2xl overflow-hidden mb-4 relative shadow-sm border border-gray-100 transition-all duration-500 hover:shadow-xl hover:shadow-gray-100">
                     <img src={p.image} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" />
-                    <button className="absolute top-6 right-6 p-3 bg-white/80 backdrop-blur-md rounded-2xl opacity-0 group-hover:opacity-100 transition-all hover:bg-white scale-90 group-hover:scale-100 shadow-xl">
-                      <ShoppingBag className="w-5 h-5 text-black" />
+                    <button className="absolute bottom-3 right-3 p-2.5 bg-white text-black rounded-xl shadow-lg hover:bg-black hover:text-white transition-all transform active:scale-95 flex items-center justify-center">
+                      <ShoppingBag className="w-4 h-4" />
                     </button>
-                    <div className="absolute top-6 left-6 flex items-center gap-1.5 px-3 py-1.5 bg-black/50 backdrop-blur-md rounded-xl text-white text-[10px] font-bold">
-                      <MapPin className="w-3 h-3" />
+                    <div className="absolute top-3 left-3 flex items-center gap-1 px-2 py-1 bg-black/60 backdrop-blur-md rounded-lg text-white text-[9px] font-bold">
+                      <MapPin className="w-2.5 h-2.5" />
                       {p.branch}
                     </div>
                   </div>
-                  <div className="px-2 space-y-1">
-                    <h4 className="font-black text-lg text-black group-hover:text-indigo-600 transition-colors uppercase tracking-tight">{p.name}</h4>
+                  <div className="px-1 space-y-1">
+                    <h4 className="font-bold text-sm text-gray-900 group-hover:text-black transition-colors line-clamp-1">{p.name}</h4>
                     <div className="flex items-center justify-between">
-                      <p className="text-indigo-600 font-bold text-lg">Ksh {p.price.toLocaleString()}</p>
-                      <div className="flex items-center gap-1.5">
-                        <Star className="w-4 h-4 fill-yellow-400 text-yellow-400" />
-                        <span className="text-gray-400 text-xs font-black">4.9</span>
+                      <p className="text-black font-black text-sm">Ksh {p.price.toLocaleString()}</p>
+                      <div className="flex items-center gap-1">
+                        <Star className="w-3 h-3 fill-yellow-400 text-yellow-400" />
+                        <span className="text-gray-500 text-[10px] font-bold">4.9</span>
                       </div>
                     </div>
                   </div>
-                </Link>
+                </div>
               ))}
             </div>
           </div>

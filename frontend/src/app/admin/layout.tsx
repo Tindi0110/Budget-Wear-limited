@@ -10,7 +10,8 @@ import {
   Settings,
   LogOut,
   ChevronRight,
-  MapPin
+  MapPin,
+  Megaphone
 } from "lucide-react";
 
 const navigation = [
@@ -19,6 +20,7 @@ const navigation = [
   { name: "Categories", href: "/admin/categories", icon: Settings },
   { name: "Branches", href: "/admin/branches", icon: MapPin },
   { name: "Orders", href: "/admin/orders", icon: ShoppingBag },
+  { name: "Adverts", href: "/admin/adverts", icon: Megaphone },
   { name: "Staff", href: "/admin/staff", icon: Users },
 ];
 
