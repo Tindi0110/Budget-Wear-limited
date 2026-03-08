@@ -13,7 +13,10 @@ import {
   Zap,
   ShieldCheck,
   MapPin,
-  Heart
+  Heart,
+  Baby,
+  Flame,
+  Globe
 } from "lucide-react";
 
 const categories = [
@@ -53,6 +56,7 @@ export default function Home() {
 
           <div className="hidden md:flex items-center gap-10">
             <Link href="/products" className="text-sm font-bold text-gray-500 hover:text-black transition-colors">SHOP ALL</Link>
+            <Link href="/baby-shop" className="text-sm font-bold text-pink-600 hover:text-pink-700 transition-colors">BABY SHOP</Link>
             <Link href="/categories" className="text-sm font-bold text-gray-500 hover:text-black transition-colors">CATEGORIES</Link>
             <Link href="/branches" className="text-sm font-bold text-gray-500 hover:text-black transition-colors">BRANCHES</Link>
           </div>
@@ -111,8 +115,63 @@ export default function Home() {
 
       <section className="pt-32 pb-20 px-4">
         <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-12">
+          {/* Left Sidebar - Quick Access */}
+          <aside className="hidden lg:col-span-2 lg:block space-y-8 h-fit sticky top-32">
+            <div className="bg-white p-6 rounded-[2rem] border border-gray-100 shadow-sm space-y-6">
+              <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest px-2">Quick Access</p>
+              
+              <nav className="space-y-1">
+                <Link href="/baby-shop" className="flex items-center gap-3 p-3 bg-pink-50 text-pink-700 rounded-2xl border border-pink-100 group transition-all hover:bg-pink-100">
+                  <div className="w-10 h-10 bg-white rounded-xl flex items-center justify-center shadow-sm transition-transform group-hover:scale-110">
+                    <Baby className="w-5 h-5" />
+                  </div>
+                  <div>
+                    <p className="text-sm font-black transition-colors">Baby Shop</p>
+                    <p className="text-[9px] font-bold opacity-70">Premium Kids Wear</p>
+                  </div>
+                </Link>
+
+                <Link href="/products?trend=new" className="flex items-center gap-3 p-3 text-gray-500 rounded-2xl hover:bg-gray-50 group transition-all">
+                  <div className="w-10 h-10 bg-orange-50 text-orange-600 rounded-xl flex items-center justify-center transition-transform group-hover:scale-110">
+                    <Flame className="w-5 h-5" />
+                  </div>
+                  <span className="text-sm font-bold group-hover:text-black transition-colors">New Drops</span>
+                </Link>
+
+                <Link href="/branches" className="flex items-center gap-3 p-3 text-gray-500 rounded-2xl hover:bg-gray-50 group transition-all">
+                  <div className="w-10 h-10 bg-indigo-50 text-indigo-600 rounded-xl flex items-center justify-center transition-transform group-hover:scale-110">
+                    <Globe className="w-5 h-5" />
+                  </div>
+                  <span className="text-sm font-bold group-hover:text-black transition-colors">All Branches</span>
+                </Link>
+              </nav>
+
+              <hr className="border-gray-50" />
+
+              <div className="space-y-4 px-2">
+                <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Collections</p>
+                <div className="space-y-3">
+                  {["Men", "Women", "Shoes", "Accessories"].map((item) => (
+                    <Link key={item} href={`/products?category=${item.toLowerCase()}`} className="block text-sm font-bold text-gray-500 hover:text-black transition-colors">
+                      {item}
+                    </Link>
+                  ))}
+                </div>
+              </div>
+            </div>
+
+            <div className="p-6 bg-gradient-to-br from-indigo-600 to-indigo-800 rounded-[2rem] text-white shadow-xl shadow-indigo-100 relative overflow-hidden">
+               <div className="relative z-10">
+                  <p className="text-[9px] font-black uppercase tracking-widest opacity-80 mb-2">Member Perk</p>
+                  <h4 className="text-sm font-black mb-4">Get 10% off on your first Bale purchase!</h4>
+                  <button className="w-full py-3 bg-white text-indigo-600 rounded-xl font-black text-xs hover:bg-indigo-50 transition-colors">CLAIM NOW</button>
+               </div>
+               <ShoppingBag className="absolute -bottom-4 -right-4 w-24 h-24 text-white/10 rotate-12" />
+            </div>
+          </aside>
+
           {/* Main Content */}
-          <div className="lg:col-span-8 space-y-12">
+          <div className="lg:col-span-7 space-y-12">
             <div className="space-y-8 animate-in fade-in slide-in-from-left-4 duration-700">
               <div className="inline-flex items-center gap-2 px-4 py-2 bg-indigo-50 text-indigo-700 rounded-full text-xs font-black uppercase tracking-widest">
                 <Zap className="w-4 h-4 fill-indigo-700" />
@@ -143,7 +202,7 @@ export default function Home() {
           </div>
 
           {/* Right Sidebar */}
-          <aside className="lg:col-span-4 space-y-8 h-fit lg:sticky lg:top-32">
+          <aside className="lg:col-span-3 space-y-8 h-fit lg:sticky lg:top-32">
             {/* Branch Widget */}
             <div className="bg-white p-8 rounded-[2.5rem] border border-gray-100 shadow-xl overflow-hidden relative group">
               <div className="absolute top-0 right-0 w-32 h-32 bg-indigo-50 rounded-full -mr-16 -mt-16 transition-transform group-hover:scale-110" />
@@ -224,6 +283,51 @@ export default function Home() {
                 </div>
               </Link>
             ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Baby Shop Special Section */}
+      <section className="py-24 bg-pink-50/50">
+        <div className="max-w-7xl mx-auto px-4">
+          <div className="flex flex-col md:flex-row items-center gap-16">
+            <div className="flex-1 space-y-8">
+              <div className="inline-flex items-center gap-2 px-4 py-2 bg-pink-100 text-pink-700 rounded-full text-[10px] font-black uppercase tracking-widest">
+                <Baby className="w-4 h-4" />
+                Special Branch: Baby Shop
+              </div>
+              <h2 className="text-5xl md:text-6xl text-black font-black tracking-tighter leading-none">
+                PREMIUM WEAR <br/> FOR YOUR <span className="text-pink-600">LITTLE ONES.</span>
+              </h2>
+              <p className="text-lg text-gray-500 font-medium max-w-md">
+                Carefully selected, high-quality Ex-UK baby clothes and accessories. Style and comfort for every milestone.
+              </p>
+              <Link 
+                href="/baby-shop" 
+                className="inline-flex items-center gap-3 px-8 py-4 bg-pink-600 text-white rounded-2xl font-black hover:bg-pink-700 transition-all shadow-lg shadow-pink-100"
+              >
+                EXPLORE BABY SHOP
+                <ArrowRight className="w-5 h-5" />
+              </Link>
+            </div>
+            <div className="flex-1 grid grid-cols-2 gap-4">
+              <div className="space-y-4 pt-12">
+                <div className="aspect-[3/4] rounded-3xl overflow-hidden shadow-xl transform hover:-rotate-2 transition-transform">
+                  <img src="https://placehold.co/400x500/000000/white?text=Baby+Outerwear" className="w-full h-full object-cover" />
+                </div>
+                <div className="aspect-square rounded-3xl overflow-hidden shadow-xl transform hover:rotate-2 transition-transform">
+                  <img src="https://placehold.co/400x400/000000/white?text=Kids+Shoes" className="w-full h-full object-cover" />
+                </div>
+              </div>
+              <div className="space-y-4">
+                <div className="aspect-square rounded-3xl overflow-hidden shadow-xl transform hover:rotate-2 transition-transform">
+                  <img src="https://placehold.co/400x400/000000/white?text=Newborn+Sets" className="w-full h-full object-cover" />
+                </div>
+                <div className="aspect-[3/4] rounded-3xl overflow-hidden shadow-xl transform hover:-rotate-2 transition-transform">
+                  <img src="https://placehold.co/400x500/000000/white?text=Toddler+Fashion" className="w-full h-full object-cover" />
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </section>
