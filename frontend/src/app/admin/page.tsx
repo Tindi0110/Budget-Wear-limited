@@ -12,7 +12,8 @@ import {
   CheckCircle,
   Truck,
   XCircle,
-  X
+  X,
+  ChevronRight
 } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
