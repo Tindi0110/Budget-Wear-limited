@@ -5,7 +5,7 @@ services:
     env: python
     rootDir: backend
     buildCommand: pip install -r requirements.txt && python manage.py collectstatic --noinput && python manage.py migrate
-    startCommand: gunicorn budget_wear_project.wsgi
+    startCommand: gunicorn budgetwear.wsgi
     envVars:
       - key: PYTHON_VERSION
         value: 3.11.8

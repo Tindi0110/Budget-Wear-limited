@@ -38,7 +38,7 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
-ROOT_URLCONF = 'budget_wear_project.urls'
+ROOT_URLCONF = 'budgetwear.urls'
 
 TEMPLATES = [
     {
@@ -56,7 +56,7 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = 'budget_wear_project.wsgi.application'
+WSGI_APPLICATION = 'budgetwear.wsgi.application'
 
 DATABASES = {
     'default': dj_database_url.config(
