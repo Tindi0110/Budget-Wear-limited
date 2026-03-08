@@ -9,6 +9,9 @@
     "start": "node dist/server.js",
     "prisma:generate": "prisma generate"
   },
+  "engines": {
+    "node": "20.x"
+  },
   "keywords": [],
   "author": "",
   "license": "ISC",
