@@ -11,10 +11,13 @@ interface Product {
   id: string;
   name: string;
   price: number;
+  original_price?: number;
+  discount_percentage?: number;
+  description: string;
   stock: number;
-  branch_name?: string;
-  category_name?: string;
-  images?: Array<{ image_url: string }>;
+  branch_name: string;
+  category_name: string;
+  images: { image_url: string; position: number }[];
 }
 
 interface Category {
@@ -184,41 +187,59 @@ export default function ProductsPage() {
           ) : (
             <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-6">
               {filtered.map((p) => (
-                <div key={p.id} className="group cursor-pointer">
-                  <div className="aspect-[3/4] bg-gray-50 rounded-2xl overflow-hidden mb-4 relative shadow-sm border border-gray-100 transition-all duration-500 hover:shadow-xl hover:shadow-gray-100">
+                <div key={p.id} className="bg-white rounded-3xl p-5 border border-gray-100 shadow-sm hover:shadow-2xl transition-all group flex flex-col h-full">
+                  <div className="aspect-[3/4] bg-gray-50 rounded-2xl overflow-hidden mb-6 relative border border-gray-50 flex-shrink-0">
                     {p.images && p.images.length > 0 ? (
-                      <img src={p.images[0].image_url} alt={p.name} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" />
+                      <img 
+                        src={p.images[0].image_url} 
+                        alt={p.name}
+                        className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+                      />
                     ) : (
                       <div className="w-full h-full flex items-center justify-center">
                         <Package className="w-12 h-12 text-gray-200" />
                       </div>
                     )}
-                    <button
-                      onClick={() => addItem({ id: p.id, name: p.name, price: Number(p.price), branch_name: p.branch_name, category_name: p.category_name, image: p.images?.[0]?.image_url })}
-                      className="absolute bottom-3 right-3 p-2.5 bg-white text-black rounded-xl shadow-lg hover:bg-indigo-600 hover:text-white transition-all active:scale-95"
+                    
+                    <div className="absolute top-3 left-3 flex flex-col gap-2">
+                       <div className="flex items-center gap-1.5 px-3 py-1.5 bg-black/60 backdrop-blur-md rounded-xl text-white text-[10px] font-black uppercase tracking-widest shadow-lg">
+                          <MapPin className="w-3 h-3" />
+                          {p.branch_name}
+                       </div>
+                       {p.discount_percentage ? (
+                         <div className="w-fit px-3 py-1.5 bg-indigo-600 text-white text-[10px] font-black rounded-xl shadow-lg animate-pulse">
+                           -{p.discount_percentage}% OFF
+                         </div>
+                       ) : p.original_price && (
+                         <div className="w-fit px-3 py-1.5 bg-indigo-600 text-white text-[10px] font-black rounded-xl shadow-lg">
+                           SALE
+                         </div>
+                       )}
+                    </div>
+
+                    <button 
+                      onClick={() => addItem({ ...p, image: p.images?.[0]?.image_url })}
+                      className="absolute bottom-4 right-4 w-12 h-12 bg-white text-black rounded-2xl shadow-2xl hover:bg-black hover:text-white transition-all transform active:scale-95 flex items-center justify-center opacity-0 group-hover:opacity-100 translate-y-2 group-hover:translate-y-0"
                     >
-                      <ShoppingBag className="w-4 h-4" />
+                      <ShoppingBag className="w-6 h-6" />
                     </button>
-                    {p.branch_name && (
-                      <div className="absolute top-3 left-3 flex items-center gap-1 px-2 py-1 bg-black/60 backdrop-blur-md rounded-lg text-white text-[9px] font-bold">
-                        <MapPin className="w-2.5 h-2.5" /> {p.branch_name}
-                      </div>
-                    )}
-                    {p.stock <= 5 && p.stock > 0 && (
-                      <div className="absolute top-3 right-3 px-2 py-1 bg-orange-500 text-white text-[9px] font-black rounded-lg">LOW STOCK</div>
-                    )}
                     {p.stock === 0 && (
                       <div className="absolute inset-0 bg-white/70 flex items-center justify-center">
                         <span className="text-xs font-black text-gray-500 uppercase tracking-widest">Out of Stock</span>
                       </div>
                     )}
                   </div>
-                  <Link href={`/products/${p.id}`} className="block px-1 space-y-1">
-                    <h4 className="font-bold text-sm text-gray-900 group-hover:text-indigo-600 transition-colors line-clamp-1">{p.name}</h4>
-                    <div className="flex items-center justify-between">
-                      <p className="text-black font-black text-sm">Ksh {Number(p.price).toLocaleString()}</p>
+                  <Link href={`/products/${p.id}`} className="block px-1 space-y-2 mt-auto">
+                    <h4 className="font-bold text-sm text-gray-900 group-hover:text-indigo-600 transition-colors line-clamp-1 truncate uppercase tracking-tight">{p.name}</h4>
+                    <div className="flex items-end justify-between">
+                      <div className="space-y-1">
+                        <p className="text-black font-black text-lg leading-none">Ksh {Number(p.price).toLocaleString()}</p>
+                        {p.original_price && (
+                          <p className="text-[11px] text-gray-400 font-bold line-through">Ksh {Number(p.original_price).toLocaleString()}</p>
+                        )}
+                      </div>
                       {p.category_name && (
-                        <span className="text-[9px] text-gray-400 font-bold uppercase">{p.category_name}</span>
+                        <span className="text-[9px] text-gray-400 font-extrabold uppercase tracking-widest">{p.category_name}</span>
                       )}
                     </div>
                   </Link>

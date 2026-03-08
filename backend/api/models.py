@@ -34,6 +34,7 @@ class Product(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     name = models.CharField(max_length=255)
     price = models.DecimalField(max_digits=10, decimal_places=2)
+    original_price = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
     description = models.TextField()
     stock = models.IntegerField(default=0)
     branch = models.ForeignKey(Branch, on_delete=models.CASCADE, related_name='products')
@@ -42,6 +43,18 @@ class Product(models.Model):
 
     def __str__(self):
         return self.name
+
+class FlashSale(models.Model):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    title = models.CharField(max_length=255)
+    description = models.TextField(null=True, blank=True)
+    start_time = models.DateTimeField(auto_now_add=True)
+    end_time = models.DateTimeField()
+    is_active = models.BooleanField(default=True)
+    products = models.ManyToManyField(Product, related_name='flash_sales')
+
+    def __str__(self):
+        return self.title
 
 class ProductImage(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)

@@ -64,8 +64,8 @@ export default function AdminBranches() {
         toast.success("Branch added");
       }
       setIsModalOpen(false);
-    } catch (error) {
-      toast.error("Operation failed");
+    } catch (error: any) {
+      toast.error(error.message || "Operation failed");
     }
   };
 

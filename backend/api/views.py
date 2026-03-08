@@ -2,7 +2,8 @@ from rest_framework import viewsets, permissions, filters
 from .models import User, Branch, Category, Product, ProductImage, Order, OrderItem, Wishlist, Advertisement
 from .serializers import (
     UserSerializer, BranchSerializer, CategorySerializer, 
-    ProductSerializer, OrderSerializer, WishlistSerializer, AdvertisementSerializer
+    ProductSerializer, OrderSerializer, WishlistSerializer, 
+    AdvertisementSerializer, FlashSaleSerializer
 )
 from django.db.models import Sum, Count
 from django.db.models.functions import TruncMonth
@@ -42,6 +43,10 @@ class WishlistViewSet(viewsets.ModelViewSet):
 class AdvertisementViewSet(viewsets.ModelViewSet):
     queryset = Advertisement.objects.all().order_by('position', '-created_at')
     serializer_class = AdvertisementSerializer
+
+class FlashSaleViewSet(viewsets.ModelViewSet):
+    queryset = FlashSale.objects.filter(is_active=True).order_by('-start_time')
+    serializer_class = FlashSaleSerializer
 
 class DashboardStatsView(APIView):
     permission_classes = [permissions.AllowAny]
