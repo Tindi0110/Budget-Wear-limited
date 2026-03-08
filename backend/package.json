@@ -4,9 +4,10 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "build": "npx tsc",
+    "build": "prisma generate && tsc",
     "start": "node dist/server.js",
-    "dev": "nodemon server.ts"
+    "dev": "nodemon server.ts",
+    "postinstall": "prisma generate"
   },
   "keywords": [],
   "author": "",
