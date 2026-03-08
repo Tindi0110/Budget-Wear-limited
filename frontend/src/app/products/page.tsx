@@ -11,6 +11,7 @@ import {
   Filter,
   ArrowLeft
 } from "lucide-react";
+import { useCart } from "@/lib/CartContext";
 
 const allProducts = [
   { id: "1", name: "Premium Denim Jacket", price: 2500, branch: "Nairobi", category: "Men", image: "https://placehold.co/300x400/000000/white?text=Denim+Jacket" },
@@ -23,6 +24,7 @@ const allProducts = [
 
 export default function ProductsPage() {
   const [searchQuery, setSearchQuery] = useState("");
+  const { addItem, count } = useCart();
 
   const filteredProducts = allProducts.filter(p => 
     p.name.toLowerCase().includes(searchQuery.toLowerCase()) || 
@@ -54,7 +56,9 @@ export default function ProductsPage() {
 
           <Link href="/cart" className="relative p-2 text-gray-400 hover:text-black transition-colors">
             <ShoppingBag className="w-6 h-6" />
-            <span className="absolute top-0 right-0 w-5 h-5 bg-black text-white text-[10px] font-black rounded-full flex items-center justify-center border-2 border-white">0</span>
+            {count > 0 && (
+              <span className="absolute top-0 right-0 w-5 h-5 bg-black text-white text-[10px] font-black rounded-full flex items-center justify-center border-2 border-white">{count}</span>
+            )}
           </Link>
         </div>
       </nav>
@@ -103,7 +107,9 @@ export default function ProductsPage() {
                 <div key={p.id} className="group cursor-pointer">
                   <div className="aspect-[3/4] bg-gray-50 rounded-2xl overflow-hidden mb-4 relative shadow-sm border border-gray-100 transition-all duration-500 hover:shadow-xl hover:shadow-gray-100">
                     <img src={p.image} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" />
-                    <button className="absolute bottom-3 right-3 p-2.5 bg-white text-black rounded-xl shadow-lg hover:bg-black hover:text-white transition-all transform active:scale-95 flex items-center justify-center">
+                    <button 
+                      onClick={() => addItem({ id: p.id, name: p.name, price: p.price, branch_name: p.branch, image: p.image })}
+                      className="absolute bottom-3 right-3 p-2.5 bg-white text-black rounded-xl shadow-lg hover:bg-black hover:text-white transition-all transform active:scale-95 flex items-center justify-center">
                       <ShoppingBag className="w-4 h-4" />
                     </button>
                     <div className="absolute top-3 left-3 flex items-center gap-1 px-2 py-1 bg-black/60 backdrop-blur-md rounded-lg text-white text-[9px] font-bold">

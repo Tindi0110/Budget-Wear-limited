@@ -18,6 +18,7 @@ import {
   Flame,
   Globe
 } from "lucide-react";
+import { useCart } from "@/lib/CartContext";
 
 const categories = [
   { name: "Men", items: "1.2k+ Items", image: "https://placehold.co/400x500/000000/white?text=Men+Fashion" },
@@ -36,6 +37,7 @@ const featuredProducts = [
 export default function Home() {
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
+  const { addItem, count } = useCart();
 
   const searchResults = [
     { name: "Blue Denim Jacket", category: "Men", price: 2500, image: "https://placehold.co/50x50/png" },
@@ -106,7 +108,9 @@ export default function Home() {
 
             <Link href="/cart" className="relative p-2 text-gray-400 hover:text-black transition-colors">
               <ShoppingBag className="w-6 h-6" />
-              <span className="absolute top-0 right-0 w-5 h-5 bg-indigo-600 text-white text-[10px] font-black rounded-full flex items-center justify-center border-2 border-white">3</span>
+              {count > 0 && (
+                <span className="absolute top-0 right-0 w-5 h-5 bg-indigo-600 text-white text-[10px] font-black rounded-full flex items-center justify-center border-2 border-white animate-in zoom-in-50 duration-300">{count}</span>
+              )}
             </Link>
             <button className="md:hidden p-2"><Menu className="w-6 h-6" /></button>
           </div>
