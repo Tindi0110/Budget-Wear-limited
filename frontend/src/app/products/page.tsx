@@ -1,136 +1,231 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
-import { 
-  ShoppingBag, 
-  Search, 
-  MapPin, 
-  Star, 
-  Heart,
-  Filter,
-  ArrowLeft
-} from "lucide-react";
+import { ShoppingBag, Search, MapPin, Star, ArrowLeft, Package, SlidersHorizontal, X } from "lucide-react";
 import { useCart } from "@/lib/CartContext";
+import { api } from "@/lib/api";
+import { toast } from "sonner";
 
-const allProducts = [
-  { id: "1", name: "Premium Denim Jacket", price: 2500, branch: "Nairobi", category: "Men", image: "https://placehold.co/300x400/000000/white?text=Denim+Jacket" },
-  { id: "2", name: "Classic Trench Coat", price: 3800, branch: "Mombasa", category: "Women", image: "https://placehold.co/300x400/000000/white?text=Trench+Coat" },
-  { id: "3", name: "Leather Chelsea Boots", price: 4200, branch: "Nakuru", category: "Shoes", image: "https://placehold.co/300x400/000000/white?text=Chelsea+Boots" },
-  { id: "4", name: "Vintage Wool Sweater", price: 1800, branch: "Eldoret", category: "Men", image: "https://placehold.co/300x400/000000/white?text=Wool+Sweater" },
-  { id: "5", name: "Floral Summer Dress", price: 2200, branch: "Nairobi", category: "Women", image: "https://placehold.co/300x400/000000/white?text=Summer+Dress" },
-  { id: "6", name: "Running Sneakers", price: 3500, branch: "Nairobi", category: "Shoes", image: "https://placehold.co/300x400/000000/white?text=Sneakers" },
-];
+interface Product {
+  id: string;
+  name: string;
+  price: number;
+  stock: number;
+  branch_name?: string;
+  category_name?: string;
+  images?: Array<{ image_url: string }>;
+}
+
+interface Category {
+  id: string;
+  name: string;
+}
+
+interface Branch {
+  id: string;
+  name: string;
+}
 
 export default function ProductsPage() {
+  const [products, setProducts] = useState<Product[]>([]);
+  const [categories, setCategories] = useState<Category[]>([]);
+  const [branches, setBranches] = useState<Branch[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
+  const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
+  const [selectedBranch, setSelectedBranch] = useState<string | null>(null);
+  const [filtersOpen, setFiltersOpen] = useState(false);
+
   const { addItem, count } = useCart();
 
-  const filteredProducts = allProducts.filter(p => 
-    p.name.toLowerCase().includes(searchQuery.toLowerCase()) || 
-    p.category.toLowerCase().includes(searchQuery.toLowerCase())
+  useEffect(() => {
+    const loadData = async () => {
+      try {
+        setIsLoading(true);
+        const [prods, cats, brs] = await Promise.all([
+          api.get("/products/"),
+          api.get("/categories/"),
+          api.get("/branches/"),
+        ]);
+        setProducts(prods);
+        setCategories(cats);
+        setBranches(brs);
+      } catch {
+        toast.error("Failed to load products");
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    loadData();
+  }, []);
+
+  const filtered = products.filter((p) => {
+    const matchSearch =
+      p.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      (p.category_name?.toLowerCase() ?? "").includes(searchQuery.toLowerCase());
+    const matchCat = !selectedCategory || p.category_name === selectedCategory;
+    const matchBranch = !selectedBranch || p.branch_name === selectedBranch;
+    return matchSearch && matchCat && matchBranch;
+  });
+
+  const Skeleton = () => (
+    <div className="group cursor-pointer">
+      <div className="aspect-[3/4] bg-gray-100 rounded-2xl animate-pulse mb-4" />
+      <div className="space-y-2 px-1">
+        <div className="h-4 bg-gray-100 rounded animate-pulse w-3/4" />
+        <div className="h-4 bg-gray-100 rounded animate-pulse w-1/3" />
+      </div>
+    </div>
   );
 
   return (
     <div className="min-h-screen bg-white">
-      {/* Navigation */}
+      {/* Navbar */}
       <nav className="fixed top-0 w-full z-50 bg-white/80 backdrop-blur-xl border-b border-gray-100">
-        <div className="max-w-7xl mx-auto px-4 h-20 flex items-center justify-between">
-          <Link href="/" className="flex items-center gap-3 group">
+        <div className="max-w-7xl mx-auto px-4 h-20 flex items-center justify-between gap-4">
+          <Link href="/" className="flex items-center gap-3 group flex-shrink-0">
             <div className="w-10 h-10 bg-black rounded-xl flex items-center justify-center transition-transform group-hover:scale-110">
-              <ArrowLeft className="text-white w-6 h-6" />
+              <ArrowLeft className="text-white w-5 h-5" />
             </div>
-            <span className="text-sm font-black tracking-tight text-gray-500 group-hover:text-black transition-colors">BACK HOME</span>
+            <span className="hidden sm:block text-sm font-black tracking-tight text-gray-500 group-hover:text-black transition-colors">HOME</span>
           </Link>
 
-          <div className="flex-1 max-w-xl mx-8 relative">
-            <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
-            <input 
-              type="text" 
-              placeholder="Search products, brands, categories..." 
-              className="w-full h-12 pl-12 pr-4 bg-gray-50 border border-transparent rounded-2xl focus:bg-white focus:ring-2 focus:ring-black/5 transition-all font-medium"
+          <div className="flex-1 max-w-xl relative">
+            <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+            <input
+              type="text"
+              placeholder="Search products..."
+              className="w-full h-11 pl-11 pr-4 bg-gray-50 border border-gray-100 rounded-2xl focus:bg-white focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all font-medium text-sm text-gray-900"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
             />
           </div>
 
-          <Link href="/cart" className="relative p-2 text-gray-400 hover:text-black transition-colors">
-            <ShoppingBag className="w-6 h-6" />
-            {count > 0 && (
-              <span className="absolute top-0 right-0 w-5 h-5 bg-black text-white text-[10px] font-black rounded-full flex items-center justify-center border-2 border-white">{count}</span>
-            )}
-          </Link>
+          <div className="flex items-center gap-3">
+            <button onClick={() => setFiltersOpen(!filtersOpen)} className="flex items-center gap-1.5 px-3 py-2 bg-gray-50 text-gray-600 rounded-xl text-xs font-black uppercase tracking-widest hover:bg-indigo-50 hover:text-indigo-600 transition-all">
+              <SlidersHorizontal className="w-4 h-4" />
+              <span className="hidden sm:block">Filter</span>
+            </button>
+            <Link href="/cart" className="relative p-2 text-gray-400 hover:text-black transition-colors">
+              <ShoppingBag className="w-6 h-6" />
+              {count > 0 && (
+                <span className="absolute top-0 right-0 w-5 h-5 bg-black text-white text-[10px] font-black rounded-full flex items-center justify-center border-2 border-white">{count}</span>
+              )}
+            </Link>
+          </div>
         </div>
       </nav>
 
-      <main className="pt-32 pb-20 px-4">
-        <div className="max-w-7xl mx-auto flex flex-col lg:flex-row gap-12">
-          {/* Filters Sidebar */}
-          <aside className="lg:w-64 space-y-10">
-            <div>
-              <h3 className="text-xl font-black text-black tracking-tighter mb-6">Filters</h3>
-              <div className="space-y-6">
-                <div className="space-y-3">
-                  <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Categories</p>
-                  {["Men", "Women", "Kids", "Shoes", "Accessories"].map((cat) => (
-                    <label key={cat} className="flex items-center gap-3 cursor-pointer group">
-                      <input type="checkbox" className="w-5 h-5 rounded-lg border-gray-200 text-black focus:ring-black/5" />
-                      <span className="text-sm font-bold text-gray-500 group-hover:text-black transition-colors">{cat}</span>
-                    </label>
-                  ))}
+      <main className="pt-28 pb-20">
+        <div className="max-w-7xl mx-auto px-4">
+          {/* Active filters */}
+          {(selectedCategory || selectedBranch) && (
+            <div className="flex items-center gap-2 mb-6 flex-wrap">
+              <span className="text-xs font-black text-gray-400 uppercase tracking-widest">Filters:</span>
+              {selectedCategory && (
+                <button onClick={() => setSelectedCategory(null)} className="flex items-center gap-1.5 px-3 py-1 bg-indigo-50 text-indigo-700 rounded-full text-xs font-black">
+                  {selectedCategory} <X className="w-3 h-3" />
+                </button>
+              )}
+              {selectedBranch && (
+                <button onClick={() => setSelectedBranch(null)} className="flex items-center gap-1.5 px-3 py-1 bg-indigo-50 text-indigo-700 rounded-full text-xs font-black">
+                  {selectedBranch} <X className="w-3 h-3" />
+                </button>
+              )}
+            </div>
+          )}
+
+          {/* Filter panel */}
+          {filtersOpen && (
+            <div className="mb-8 p-6 bg-gray-50 rounded-2xl border border-gray-100 animate-in slide-in-from-top-2 duration-300">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                <div>
+                  <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-3">Category</p>
+                  <div className="flex flex-wrap gap-2">
+                    {categories.map((c) => (
+                      <button key={c.id} onClick={() => setSelectedCategory(selectedCategory === c.name ? null : c.name)}
+                        className={`px-3 py-1.5 rounded-xl text-xs font-black transition-all ${selectedCategory === c.name ? "bg-indigo-600 text-white" : "bg-white text-gray-600 border border-gray-100 hover:border-indigo-300"}`}>
+                        {c.name}
+                      </button>
+                    ))}
+                  </div>
                 </div>
-
-                <hr className="border-gray-50" />
-
-                <div className="space-y-3">
-                  <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Branches</p>
-                  {["Nairobi", "Mombasa", "Nakuru", "Eldoret"].map((branch) => (
-                    <label key={branch} className="flex items-center gap-3 cursor-pointer group">
-                      <input type="checkbox" className="w-5 h-5 rounded-lg border-gray-200 text-black focus:ring-black/5" />
-                      <span className="text-sm font-bold text-gray-500 group-hover:text-black transition-colors">{branch}</span>
-                    </label>
-                  ))}
+                <div>
+                  <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-3">Branch</p>
+                  <div className="flex flex-wrap gap-2">
+                    {branches.map((b) => (
+                      <button key={b.id} onClick={() => setSelectedBranch(selectedBranch === b.name ? null : b.name)}
+                        className={`px-3 py-1.5 rounded-xl text-xs font-black transition-all ${selectedBranch === b.name ? "bg-indigo-600 text-white" : "bg-white text-gray-600 border border-gray-100 hover:border-indigo-300"}`}>
+                        {b.name}
+                      </button>
+                    ))}
+                  </div>
                 </div>
               </div>
             </div>
-          </aside>
+          )}
 
-          {/* Product Grid */}
-          <div className="flex-1 space-y-12">
-            <div className="flex items-baseline justify-between mb-8">
-              <h1 className="text-4xl font-black text-black tracking-tighter">ALL COLLECTIONS</h1>
-              <p className="text-sm font-bold text-gray-400">{filteredProducts.length} Results Found</p>
+          <div className="flex items-baseline justify-between mb-8">
+            <h1 className="text-3xl font-black text-black tracking-tighter">ALL PRODUCTS</h1>
+            <p className="text-sm font-bold text-gray-400">{filtered.length} items</p>
+          </div>
+
+          {isLoading ? (
+            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-6">
+              {[...Array(8)].map((_, i) => <Skeleton key={i} />)}
             </div>
-
-            <div className="grid grid-cols-2 lg:grid-cols-4 gap-6">
-              {filteredProducts.map((p) => (
+          ) : filtered.length === 0 ? (
+            <div className="py-32 flex flex-col items-center gap-4 text-center">
+              <Package className="w-16 h-16 text-gray-200" />
+              <p className="text-xl font-black text-gray-400">No products found</p>
+              <button onClick={() => { setSearchQuery(""); setSelectedCategory(null); setSelectedBranch(null); }} className="text-indigo-600 font-bold text-sm hover:underline">Clear filters</button>
+            </div>
+          ) : (
+            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-6">
+              {filtered.map((p) => (
                 <div key={p.id} className="group cursor-pointer">
                   <div className="aspect-[3/4] bg-gray-50 rounded-2xl overflow-hidden mb-4 relative shadow-sm border border-gray-100 transition-all duration-500 hover:shadow-xl hover:shadow-gray-100">
-                    <img src={p.image} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" />
-                    <button 
-                      onClick={() => addItem({ id: p.id, name: p.name, price: p.price, branch_name: p.branch, image: p.image })}
-                      className="absolute bottom-3 right-3 p-2.5 bg-white text-black rounded-xl shadow-lg hover:bg-black hover:text-white transition-all transform active:scale-95 flex items-center justify-center">
+                    {p.images && p.images.length > 0 ? (
+                      <img src={p.images[0].image_url} alt={p.name} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" />
+                    ) : (
+                      <div className="w-full h-full flex items-center justify-center">
+                        <Package className="w-12 h-12 text-gray-200" />
+                      </div>
+                    )}
+                    <button
+                      onClick={() => addItem({ id: p.id, name: p.name, price: Number(p.price), branch_name: p.branch_name, category_name: p.category_name, image: p.images?.[0]?.image_url })}
+                      className="absolute bottom-3 right-3 p-2.5 bg-white text-black rounded-xl shadow-lg hover:bg-indigo-600 hover:text-white transition-all active:scale-95"
+                    >
                       <ShoppingBag className="w-4 h-4" />
                     </button>
-                    <div className="absolute top-3 left-3 flex items-center gap-1 px-2 py-1 bg-black/60 backdrop-blur-md rounded-lg text-white text-[9px] font-bold">
-                      <MapPin className="w-2.5 h-2.5" />
-                      {p.branch}
-                    </div>
-                  </div>
-                  <div className="px-1 space-y-1">
-                    <h4 className="font-bold text-sm text-gray-900 group-hover:text-black transition-colors line-clamp-1">{p.name}</h4>
-                    <div className="flex items-center justify-between">
-                      <p className="text-black font-black text-sm">Ksh {p.price.toLocaleString()}</p>
-                      <div className="flex items-center gap-1">
-                        <Star className="w-3 h-3 fill-yellow-400 text-yellow-400" />
-                        <span className="text-gray-500 text-[10px] font-bold">4.9</span>
+                    {p.branch_name && (
+                      <div className="absolute top-3 left-3 flex items-center gap-1 px-2 py-1 bg-black/60 backdrop-blur-md rounded-lg text-white text-[9px] font-bold">
+                        <MapPin className="w-2.5 h-2.5" /> {p.branch_name}
                       </div>
-                    </div>
+                    )}
+                    {p.stock <= 5 && p.stock > 0 && (
+                      <div className="absolute top-3 right-3 px-2 py-1 bg-orange-500 text-white text-[9px] font-black rounded-lg">LOW STOCK</div>
+                    )}
+                    {p.stock === 0 && (
+                      <div className="absolute inset-0 bg-white/70 flex items-center justify-center">
+                        <span className="text-xs font-black text-gray-500 uppercase tracking-widest">Out of Stock</span>
+                      </div>
+                    )}
                   </div>
+                  <Link href={`/products/${p.id}`} className="block px-1 space-y-1">
+                    <h4 className="font-bold text-sm text-gray-900 group-hover:text-indigo-600 transition-colors line-clamp-1">{p.name}</h4>
+                    <div className="flex items-center justify-between">
+                      <p className="text-black font-black text-sm">Ksh {Number(p.price).toLocaleString()}</p>
+                      {p.category_name && (
+                        <span className="text-[9px] text-gray-400 font-bold uppercase">{p.category_name}</span>
+                      )}
+                    </div>
+                  </Link>
                 </div>
               ))}
             </div>
-          </div>
+          )}
         </div>
       </main>
     </div>
