@@ -1,21 +1,73 @@
 "use client";
 
 import { Plus, Search, Edit2, Trash2, Folder, X } from "lucide-react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { toast } from "sonner";
+import { api } from "@/lib/api";
 
-const categories = [
-  { id: "1", name: "Men", icon: "Shirt", items: 45 },
-  { id: "2", name: "Women", icon: "ShoppingBag", items: 112 },
-  { id: "3", name: "Kids", icon: "Baby", items: 28 },
-  { id: "4", name: "Shoes", icon: "Footprints", items: 64 },
-  { id: "5", name: "Bales", icon: "Box", items: 12 },
-];
+interface Category {
+  id: string;
+  name: string;
+  icon?: string;
+  items?: number; // Optional if backend doesn't provide it yet
+}
 
 export default function AdminCategories() {
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [editingCategory, setEditingCategory] = useState<any>(null);
-  const [cats, setCats] = useState(categories);
+  const [editingCategory, setEditingCategory] = useState<Category | null>(null);
+  const [categories, setCategories] = useState<Category[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    fetchCategories();
+  }, []);
+
+  const fetchCategories = async () => {
+    try {
+      setIsLoading(true);
+      const data = await api.get('/categories/');
+      setCategories(data);
+    } catch (error) {
+      toast.error("Failed to fetch categories");
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleDelete = async (id: string) => {
+    try {
+      await api.delete(`/categories/${id}/`);
+      setCategories(categories.filter(c => c.id !== id));
+      toast.success("Category deleted");
+    } catch (error) {
+      toast.error("Failed to delete category");
+    }
+  };
+
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    const formData = new FormData(e.currentTarget);
+    const categoryData = {
+      name: formData.get('name'),
+      icon: formData.get('icon'),
+    };
+
+    try {
+      if (editingCategory) {
+        const updated = await api.put(`/categories/${editingCategory.id}/`, categoryData);
+        setCategories(categories.map(c => c.id === updated.id ? updated : c));
+        toast.success("Category updated");
+      } else {
+        const created = await api.post('/categories/', categoryData);
+        setCategories([...categories, created]);
+        toast.success("Category created");
+      }
+      setIsModalOpen(false);
+    } catch (error) {
+      toast.error(editingCategory ? "Failed to update" : "Failed to create");
+    }
+  };
+
   return (
     <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
       <div className="flex justify-between items-center">
@@ -29,33 +81,44 @@ export default function AdminCategories() {
          </button>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {cats.map((cat) => (
-          <div key={cat.id} className="bg-white p-6 rounded-3xl border border-gray-100 shadow-sm hover:shadow-md transition-all group">
-             <div className="flex justify-between items-start mb-6">
-                <div className="w-14 h-14 bg-indigo-50 rounded-2xl flex items-center justify-center text-indigo-600">
-                   <Folder className="w-7 h-7" />
-                </div>
-                <div className="flex gap-2 transition-opacity">
-                   <button 
-                     onClick={() => { setEditingCategory(cat); setIsModalOpen(true); }}
-                     className="p-2 text-gray-500 hover:text-indigo-600 hover:bg-indigo-50 rounded-xl transition-all"
-                   >
-                      <Edit2 className="w-4 h-4" />
-                   </button>
-                   <button 
-                     onClick={() => { setCats(cats.filter(c => c.id !== cat.id)); toast.error("Category deleted"); }}
-                     className="p-2 text-gray-500 hover:text-red-600 hover:bg-red-50 rounded-xl transition-all"
-                   >
-                      <Trash2 className="w-4 h-4" />
-                   </button>
-                </div>
-             </div>
-             <h3 className="text-lg font-black text-gray-900">{cat.name}</h3>
-             <p className="text-sm text-gray-500 font-medium mt-1">{cat.items} Products</p>
-          </div>
-        ))}
-      </div>
+      {isLoading ? (
+        <div className="flex items-center justify-center h-64">
+          <div className="w-8 h-8 border-4 border-indigo-600 border-t-transparent rounded-full animate-spin"></div>
+        </div>
+      ) : (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {categories.map((cat) => (
+            <div key={cat.id} className="bg-white p-6 rounded-3xl border border-gray-100 shadow-sm hover:shadow-md transition-all group">
+               <div className="flex justify-between items-start mb-6">
+                  <div className="w-14 h-14 bg-indigo-50 rounded-2xl flex items-center justify-center text-indigo-600">
+                     <Folder className="w-7 h-7" />
+                  </div>
+                  <div className="flex gap-2">
+                     <button 
+                       onClick={() => { setEditingCategory(cat); setIsModalOpen(true); }}
+                       className="p-2 text-gray-500 hover:text-indigo-600 hover:bg-indigo-50 rounded-xl transition-all"
+                     >
+                        <Edit2 className="w-4 h-4" />
+                     </button>
+                     <button 
+                       onClick={() => handleDelete(cat.id)}
+                       className="p-2 text-gray-500 hover:text-red-600 hover:bg-red-50 rounded-xl transition-all"
+                     >
+                        <Trash2 className="w-4 h-4" />
+                     </button>
+                  </div>
+               </div>
+               <h3 className="text-lg font-black text-gray-900">{cat.name}</h3>
+               <p className="text-sm text-gray-500 font-bold mt-1 uppercase tracking-widest text-[10px]">Active Category</p>
+            </div>
+          ))}
+          {!isLoading && categories.length === 0 && (
+            <div className="col-span-full py-20 text-center text-gray-500 font-bold">
+              No categories found. Start by creating one!
+            </div>
+          )}
+        </div>
+      )}
 
       {/* Add/Edit Category Modal */}
       {isModalOpen && (
@@ -70,10 +133,11 @@ export default function AdminCategories() {
               </button>
             </div>
             
-            <form className="p-10 space-y-8" onSubmit={(e) => { e.preventDefault(); setIsModalOpen(false); toast.success(editingCategory ? "Category updated" : "Category created"); }}>
+            <form className="p-10 space-y-8" onSubmit={handleSubmit}>
               <div className="space-y-3">
                 <label className="text-[10px] font-black uppercase tracking-widest text-gray-400 px-1">Category Name</label>
                 <input 
+                  name="name"
                   type="text" 
                   defaultValue={editingCategory?.name || ''}
                   placeholder="e.g. Vintage Wear" 
@@ -84,12 +148,16 @@ export default function AdminCategories() {
 
               <div className="space-y-3">
                 <label className="text-[10px] font-black uppercase tracking-widest text-gray-400 px-1">Icon Selection</label>
-                <select className="w-full h-16 px-6 bg-gray-50 border border-gray-100 rounded-[1.5rem] focus:bg-white focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-500 transition-all font-bold">
-                   <option>Shirt (Default)</option>
-                   <option>ShoppingBag</option>
-                   <option>Baby</option>
-                   <option>Footprints</option>
-                   <option>Box</option>
+                <select 
+                  name="icon"
+                  defaultValue={editingCategory?.icon || 'Shirt'}
+                  className="w-full h-16 px-6 bg-gray-50 border border-gray-100 rounded-[1.5rem] focus:bg-white focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-500 transition-all font-bold"
+                >
+                   <option value="Shirt">Shirt (Default)</option>
+                   <option value="ShoppingBag">ShoppingBag</option>
+                   <option value="Baby">Baby</option>
+                   <option value="Footprints">Footprints</option>
+                   <option value="Box">Box</option>
                 </select>
               </div>
 

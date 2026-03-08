@@ -2,7 +2,8 @@ from django.urls import path, include
 from rest_framework.routers import DefaultRouter
 from .views import (
     UserViewSet, BranchViewSet, CategoryViewSet, 
-    ProductViewSet, OrderViewSet, WishlistViewSet, MpesaCallbackView, AdvertisementViewSet
+    ProductViewSet, OrderViewSet, WishlistViewSet, MpesaCallbackView, AdvertisementViewSet,
+    DashboardStatsView
 )
 
 router = DefaultRouter()
@@ -16,5 +17,6 @@ router.register(r'adverts', AdvertisementViewSet)
 
 urlpatterns = [
     path('', include(router.urls)),
+    path('dashboard-stats/', DashboardStatsView.as_view(), name='dashboard-stats'),
     path('mpesa/callback/', MpesaCallbackView.as_view(), name='mpesa-callback'),
 ]
