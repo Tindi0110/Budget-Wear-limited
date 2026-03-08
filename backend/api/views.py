@@ -31,3 +31,27 @@ class OrderViewSet(viewsets.ModelViewSet):
 class WishlistViewSet(viewsets.ModelViewSet):
     queryset = Wishlist.objects.all()
     serializer_class = WishlistSerializer
+
+# M-Pesa Integration View
+from rest_framework.views import APIView
+from rest_framework.response import Response
+from rest_framework import status
+import logging
+
+logger = logging.getLogger(__name__)
+
+class MpesaCallbackView(APIView):
+    permission_classes = [permissions.AllowAny]
+
+    def post(self, request, *args, **kwargs):
+        """
+        Handles the callback from Safaricom M-Pesa.
+        """
+        data = request.data
+        logger.info(f"M-Pesa Callback Data: {data}")
+        
+        # Here you would process the StkCallback data
+        # For example: check if 'ResultCode' is 0 (Success)
+        # Update the Order status in the database
+        
+        return Response({"ResultCode": 0, "ResultDesc": "Success"}, status=status.HTTP_200_OK)

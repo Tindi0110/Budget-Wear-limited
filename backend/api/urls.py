@@ -2,7 +2,7 @@ from django.urls import path, include
 from rest_framework.routers import DefaultRouter
 from .views import (
     UserViewSet, BranchViewSet, CategoryViewSet, 
-    ProductViewSet, OrderViewSet, WishlistViewSet
+    ProductViewSet, OrderViewSet, WishlistViewSet, MpesaCallbackView
 )
 
 router = DefaultRouter()
@@ -15,4 +15,5 @@ router.register(r'wishlist', WishlistViewSet)
 
 urlpatterns = [
     path('', include(router.urls)),
+    path('mpesa/callback/', MpesaCallbackView.as_view(), name='mpesa-callback'),
 ]
