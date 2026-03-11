@@ -39,7 +39,7 @@ venv/
 .venv/
 env/
 .env/
-bin/
-lib/
-include/
+# Only ignore top-level lib if it's a venv
+/lib/
 /backend/venv/
+/backend/env/
