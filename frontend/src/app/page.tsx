@@ -73,6 +73,7 @@ export default function Home() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const { addItem, count } = useCart();
+  const flashScrollRef = (typeof window !== "undefined") ? require("react").useRef<HTMLDivElement>(null) : { current: null };
 
   const [products, setProducts] = useState<Product[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
@@ -81,6 +82,17 @@ export default function Home() {
   const [flashSales, setFlashSales] = useState<FlashSaleProp[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [activeCategory, setActiveCategory] = useState<string | null>(null);
+  const [currentAdIndex, setCurrentAdIndex] = useState(0);
+
+  // Advert Carousel Logic
+  useEffect(() => {
+    if (adverts.length > 1) {
+      const interval = setInterval(() => {
+        setCurrentAdIndex((prev) => (prev + 1) % adverts.length);
+      }, 5000);
+      return () => clearInterval(interval);
+    }
+  }, [adverts]);
 
   useEffect(() => {
     const loadData = async () => {
@@ -173,9 +185,10 @@ export default function Home() {
           <div className="flex items-center gap-6">
             <nav className="hidden xl:flex items-center gap-6">
               <Link href="/products" className="text-xs font-black text-gray-500 hover:text-indigo-600 transition-colors uppercase tracking-widest">Shop All</Link>
-              <Link href="/products" className="text-xs font-black text-gray-500 hover:text-indigo-600 transition-colors uppercase tracking-widest">Categories</Link>
-              <Link href="/branches" className="text-xs font-black text-gray-500 hover:text-indigo-600 transition-colors uppercase tracking-widest">Branches</Link>
-              <Link href="/about" className="text-xs font-black text-gray-500 hover:text-indigo-600 transition-colors uppercase tracking-widest">About Us</Link>
+              <Link href="/services" className="text-xs font-black text-gray-500 hover:text-indigo-600 transition-colors uppercase tracking-widest">Services</Link>
+              <Link href="/about" className="text-xs font-black text-gray-500 hover:text-indigo-600 transition-colors uppercase tracking-widest">About</Link>
+              <Link href="/contact" className="text-xs font-black text-gray-500 hover:text-indigo-600 transition-colors uppercase tracking-widest">Contact</Link>
+              <Link href="/sarabis" className="text-xs font-black text-pink-500 hover:text-pink-600 transition-colors uppercase tracking-widest">Sarabis Baby</Link>
             </nav>
             
             <div className="flex items-center gap-4">
@@ -325,33 +338,54 @@ export default function Home() {
               {/* Central Hero + Adverts */}
               <div className="lg:col-span-9 space-y-8">
                  <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-                    <div className="md:col-span-3">
-                       {/* Main Slider */}
-                       {featuredAd && (
-                         <div className="relative w-full aspect-[21/9] md:aspect-auto md:h-[400px] bg-black rounded-3xl overflow-hidden group shadow-2xl">
-                           <div className="absolute inset-0 bg-gradient-to-r from-black/80 via-black/40 to-transparent z-10" />
-                           {/* Premium Background Image Implementation */}
-                           <img 
-                            src="budget_wear_hero_bg_1773261225170.png" 
-                            className="absolute inset-0 w-full h-full object-cover opacity-60 mix-blend-overlay group-hover:scale-105 transition-transform duration-[10s]" 
-                            alt="Background" 
-                           />
-                           <img src={featuredAd.image} className="w-full h-full object-cover transition-transform duration-[10s] group-hover:scale-105" alt={featuredAd.title} />
-                           <div className="absolute inset-0 z-20 p-8 md:p-12 flex flex-col justify-center max-w-md space-y-4">
-                              <div className="inline-flex items-center gap-2 px-3 py-1 bg-indigo-600 text-white rounded-full text-[10px] font-black uppercase tracking-widest w-fit">
-                                 <Zap className="w-3.5 h-3.5 fill-current" /> LIMITED TIME
-                              </div>
-                              <h2 className="text-4xl md:text-5xl font-black text-white tracking-tighter leading-none uppercase">
-                                 {featuredAd.title}
-                              </h2>
-                              <p className="text-gray-300 text-sm font-medium line-clamp-2">{featuredAd.description}</p>
-                              <Link href={featuredAd.link || "/products"} className="bg-white text-black px-10 py-4 rounded-2xl font-black text-xs uppercase tracking-widest w-fit hover:bg-indigo-600 hover:text-white transition-all transform hover:-translate-y-1 shadow-xl">
-                                 SHOP NOW
-                              </Link>
-                           </div>
-                         </div>
-                       )}
-                    </div>
+                     <div className="md:col-span-3">
+                        {/* Advert Carousel */}
+                        <div className="relative w-full aspect-[21/9] md:aspect-auto md:h-[400px] bg-black rounded-3xl overflow-hidden group shadow-2xl">
+                           {adverts.length > 0 ? adverts.map((ad, idx) => (
+                             <div 
+                               key={ad.id} 
+                               className={`absolute inset-0 transition-opacity duration-1000 ${idx === currentAdIndex ? 'opacity-100 z-10' : 'opacity-0 z-0'}`}
+                             >
+                                <div className="absolute inset-0 bg-gradient-to-r from-black/80 via-black/40 to-transparent z-10" />
+                                <img 
+                                 src="budget_wear_hero_bg_1773261225170.png" 
+                                 className="absolute inset-0 w-full h-full object-cover opacity-60 mix-blend-overlay group-hover:scale-105 transition-transform duration-[10s]" 
+                                 alt="Background" 
+                                />
+                                <img src={ad.image} className="w-full h-full object-cover" alt={ad.title} />
+                                <div className="absolute inset-0 z-20 p-8 md:p-12 flex flex-col justify-center max-w-md space-y-4">
+                                   <div className="inline-flex items-center gap-2 px-3 py-1 bg-indigo-600 text-white rounded-full text-[10px] font-black uppercase tracking-widest w-fit">
+                                      <Zap className="w-3.5 h-3.5 fill-current" /> LIMITED TIME
+                                   </div>
+                                   <h2 className="text-4xl md:text-5xl font-black text-white tracking-tighter leading-none uppercase animate-in slide-in-from-left duration-700">
+                                      {ad.title}
+                                   </h2>
+                                   <p className="text-gray-300 text-sm font-medium line-clamp-2 animate-in slide-in-from-left duration-1000">{ad.description}</p>
+                                   <Link href={ad.link || "/products"} className="bg-white text-black px-10 py-4 rounded-2xl font-black text-xs uppercase tracking-widest w-fit hover:bg-indigo-600 hover:text-white transition-all transform hover:-translate-y-1 shadow-xl">
+                                      SHOP NOW
+                                   </Link>
+                                </div>
+                             </div>
+                           )) : (
+                             <div className="w-full h-full bg-indigo-900 flex items-center justify-center">
+                                <p className="text-white font-black text-2xl uppercase tracking-widest">Premium Fashion Awaits</p>
+                             </div>
+                           )}
+                           
+                           {/* Dots Indicator */}
+                           {adverts.length > 1 && (
+                             <div className="absolute bottom-6 left-1/2 -translate-x-1/2 z-30 flex gap-2">
+                                {adverts.map((_, i) => (
+                                  <button 
+                                    key={i} 
+                                    onClick={() => setCurrentAdIndex(i)}
+                                    className={`w-2 h-2 rounded-full transition-all ${i === currentAdIndex ? 'bg-white w-6' : 'bg-white/40'}`}
+                                  />
+                                ))}
+                             </div>
+                           )}
+                        </div>
+                     </div>
                     {/* Side Adverts like Jumia */}
                     <div className="hidden md:flex flex-col gap-6">
                        <Link href="/products?trend=new" className="flex-1 bg-orange-100 rounded-3xl p-6 relative overflow-hidden group">
@@ -362,7 +396,7 @@ export default function Home() {
                           </div>
                           <Flame className="absolute -bottom-4 -right-4 w-24 h-24 text-orange-200/50 rotate-12 transition-transform group-hover:scale-110" />
                        </Link>
-                       <Link href="/baby-shop" className="flex-1 bg-pink-100 rounded-3xl p-6 relative overflow-hidden group">
+                       <Link href="/sarabis" className="flex-1 bg-pink-100 rounded-3xl p-6 relative overflow-hidden group">
                           <div className="relative z-10">
                              <p className="text-[10px] font-black text-pink-600 uppercase tracking-widest">Special</p>
                              <h4 className="text-lg font-black text-gray-900 leading-tight mt-2 uppercase">Sarabis <br/> Baby Shop</h4>
@@ -397,24 +431,40 @@ export default function Home() {
 
             {/* FLASH SALES SECTION (Jumia Inspired) */}
             <section className="mt-16 bg-white rounded-[3rem] overflow-hidden border border-orange-100 shadow-2xl shadow-orange-50/20">
-               <div className="bg-orange-600 px-8 py-4 flex items-center justify-between">
-                  <div className="flex items-center gap-6">
-                    <div className="flex items-center gap-3">
-                       <Zap className="w-6 h-6 text-white fill-current" />
-                       <h2 className="text-xl md:text-2xl font-black text-white uppercase tracking-tighter">Flash Sales</h2>
-                    </div>
-                    {/* Countdown Timer Component */}
-                    <div className="hidden md:flex items-center gap-3 text-white/80">
-                       <span className="text-xs font-bold uppercase tracking-widest">Ending in:</span>
-                       <CountdownTimer targetDate={activeFlashSale?.end_time || "2026-03-31T23:59:59"} />
-                    </div>
-                  </div>
-                  <Link href="/products" className="text-sm font-black text-white hover:underline flex items-center gap-2">
-                     SEE ALL <ChevronRight className="w-4 h-4" />
-                  </Link>
-               </div>
+                <div className="bg-orange-600 px-8 py-4 flex items-center justify-between">
+                   <div className="flex items-center gap-6">
+                     <div className="flex items-center gap-3">
+                        <Zap className="w-6 h-6 text-white fill-current" />
+                        <h2 className="text-xl md:text-2xl font-black text-white uppercase tracking-tighter">Flash Sales</h2>
+                     </div>
+                     {/* Countdown Timer Component */}
+                     <div className="hidden md:flex items-center gap-3 text-white/80">
+                        <span className="text-xs font-bold uppercase tracking-widest">Ending in:</span>
+                        <CountdownTimer targetDate={activeFlashSale?.end_time || "2026-03-31T23:59:59"} />
+                     </div>
+                   </div>
+                   <div className="flex items-center gap-4">
+                      <div className="flex items-center gap-2 mr-4">
+                         <button 
+                           onClick={() => flashScrollRef.current?.scrollBy({ left: -300, behavior: 'smooth' })}
+                           className="p-2 bg-white/10 hover:bg-white/20 text-white rounded-xl transition-all"
+                         >
+                            <ChevronRight className="w-4 h-4 rotate-180" />
+                         </button>
+                         <button 
+                           onClick={() => flashScrollRef.current?.scrollBy({ left: 300, behavior: 'smooth' })}
+                           className="p-2 bg-white/10 hover:bg-white/20 text-white rounded-xl transition-all"
+                         >
+                            <ChevronRight className="w-4 h-4" />
+                         </button>
+                      </div>
+                      <Link href="/products" className="text-sm font-black text-white hover:underline flex items-center gap-2">
+                         SEE ALL <ChevronRight className="w-4 h-4" />
+                      </Link>
+                   </div>
+                </div>
                
-               <div className="p-8 overflow-x-auto custom-scrollbar">
+                <div className="p-8 overflow-x-auto custom-scrollbar" ref={flashScrollRef}>
                   <div className="flex gap-6 pb-4">
                      {featuredProducts.length > 0 ? featuredProducts.map((p) => {
                        const discount = p.discount_percentage || (p.original_price ? Math.round(((p.original_price - p.price) / p.original_price) * 100) : null);

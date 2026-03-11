@@ -16,6 +16,7 @@ class Branch(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     name = models.CharField(max_length=255)
     location = models.CharField(max_length=255)
+    map_url = models.URLField(max_length=1000, null=True, blank=True)
     type = models.CharField(max_length=50) # "thrift_store" or "baby_shop"
     created_at = models.DateTimeField(auto_now_add=True)
 
