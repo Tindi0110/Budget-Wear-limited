@@ -171,7 +171,12 @@ export default function Home() {
           </div>
 
           <div className="flex items-center gap-6">
-            <Link href="/products" className="hidden md:block text-xs font-black text-gray-500 hover:text-indigo-600 transition-colors uppercase tracking-widest">Shop All</Link>
+            <nav className="hidden xl:flex items-center gap-6">
+              <Link href="/products" className="text-xs font-black text-gray-500 hover:text-indigo-600 transition-colors uppercase tracking-widest">Shop All</Link>
+              <Link href="/products" className="text-xs font-black text-gray-500 hover:text-indigo-600 transition-colors uppercase tracking-widest">Categories</Link>
+              <Link href="/branches" className="text-xs font-black text-gray-500 hover:text-indigo-600 transition-colors uppercase tracking-widest">Branches</Link>
+              <Link href="/about" className="text-xs font-black text-gray-500 hover:text-indigo-600 transition-colors uppercase tracking-widest">About Us</Link>
+            </nav>
             
             <div className="flex items-center gap-4">
               <Link href="/wishlist" className="p-2 text-gray-400 hover:text-red-500 transition-colors hidden sm:block">
@@ -325,6 +330,12 @@ export default function Home() {
                        {featuredAd && (
                          <div className="relative w-full aspect-[21/9] md:aspect-auto md:h-[400px] bg-black rounded-3xl overflow-hidden group shadow-2xl">
                            <div className="absolute inset-0 bg-gradient-to-r from-black/80 via-black/40 to-transparent z-10" />
+                           {/* Premium Background Image Implementation */}
+                           <img 
+                            src="budget_wear_hero_bg_1773261225170.png" 
+                            className="absolute inset-0 w-full h-full object-cover opacity-60 mix-blend-overlay group-hover:scale-105 transition-transform duration-[10s]" 
+                            alt="Background" 
+                           />
                            <img src={featuredAd.image} className="w-full h-full object-cover transition-transform duration-[10s] group-hover:scale-105" alt={featuredAd.title} />
                            <div className="absolute inset-0 z-20 p-8 md:p-12 flex flex-col justify-center max-w-md space-y-4">
                               <div className="inline-flex items-center gap-2 px-3 py-1 bg-indigo-600 text-white rounded-full text-[10px] font-black uppercase tracking-widest w-fit">
@@ -403,7 +414,7 @@ export default function Home() {
                   </Link>
                </div>
                
-               <div className="p-8 overflow-x-auto">
+               <div className="p-8 overflow-x-auto custom-scrollbar">
                   <div className="flex gap-6 pb-4">
                      {featuredProducts.length > 0 ? featuredProducts.map((p) => {
                        const discount = p.discount_percentage || (p.original_price ? Math.round(((p.original_price - p.price) / p.original_price) * 100) : null);
