@@ -5,12 +5,10 @@ services:
     env: python
     rootDir: backend
     buildCommand: pip install -r requirements.txt && python manage.py collectstatic --noinput && python manage.py migrate
-    startCommand: gunicorn budgetwear.wsgi --bind 0.0.0.0:5000
+    startCommand: gunicorn budgetwear.wsgi --bind 0.0.0.0:$PORT
     envVars:
       - key: PYTHON_VERSION
         value: 3.11.8
-      - key: PORT
-        value: 5000
       - key: DEBUG
         value: False
 
