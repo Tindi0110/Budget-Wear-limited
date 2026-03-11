@@ -2,11 +2,17 @@
 const BASE = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
 const API_BASE_URL = BASE.endsWith('/') ? BASE.slice(0, -1) : BASE;
 
-async function handleResponse(response: Response) {
+async function handleResponse(response: Response, endpoint: string) {
   if (!response.ok) {
-    const error = await response.json().catch(() => ({}));
-    console.error('API Error Response:', error);
-    throw new Error(error.message || error.detail || `API request failed with status ${response.status}`);
+    let errorDetail = '';
+    try {
+      const error = await response.json();
+      errorDetail = error.message || error.detail || JSON.stringify(error);
+    } catch (e) {
+      errorDetail = `Status ${response.status}: ${response.statusText}`;
+    }
+    console.error(`API Error [${endpoint}]:`, errorDetail);
+    throw new Error(errorDetail);
   }
   if (response.status === 204) return null;
   return response.json();
@@ -14,13 +20,15 @@ async function handleResponse(response: Response) {
 
 export const api = {
   async fetchWithRetry(endpoint: string, options: RequestInit) {
+    const url = `${API_BASE_URL}${endpoint}`;
+    console.log(`[API Request] ${options.method || 'GET'} ${url}`);
     try {
-      const response = await fetch(`${API_BASE_URL}${endpoint}`, options);
-      return await handleResponse(response);
+      const response = await fetch(url, options);
+      return await handleResponse(response, endpoint);
     } catch (error: any) {
       if (error.name === 'TypeError' && error.message.includes('fetch')) {
-        console.error('Network Error at:', `${API_BASE_URL}${endpoint}`);
-        throw new Error(`Connection refused to ${API_BASE_URL}. Ensure backend is running.`);
+        console.error('[API Network Error]:', url);
+        throw new Error(`Cannot connect to backend at ${API_BASE_URL}. Ensure it is running and accessible via HTTPS.`);
       }
       throw error;
     }

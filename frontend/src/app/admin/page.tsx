@@ -69,13 +69,22 @@ export default function AdminDashboard() {
   const [recentOrders, setRecentOrders] = useState<any[]>([]);
   const [monthlyData, setMonthlyData] = useState<any[]>([]);
   const [categoryData, setCategoryData] = useState<any[]>([]);
-  const [branchData, setBranchData] = useState<any[]>([]);
-  const [statusData, setStatusData] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [connectionStatus, setConnectionStatus] = useState<'checking' | 'online' | 'offline'>('checking');
 
   useEffect(() => {
     fetchDashboardData();
+    checkConnection();
   }, []);
+
+  const checkConnection = async () => {
+    try {
+      await api.get('/ping/');
+      setConnectionStatus('online');
+    } catch (err) {
+      setConnectionStatus('offline');
+    }
+  };
 
   const fetchDashboardData = async () => {
     try {
@@ -87,8 +96,8 @@ export default function AdminDashboard() {
       setCategoryData(data.category_data || []);
       setBranchData(data.branch_data || []);
       setStatusData(data.status_data || []);
-    } catch (error) {
-      toast.error("Failed to load dashboard statistics");
+    } catch (error: any) {
+      toast.error(`Dashboard Error: ${error.message}`);
     } finally {
       setIsLoading(false);
     }
@@ -114,7 +123,22 @@ export default function AdminDashboard() {
   return (
     <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
       
-      {/* Stats Grid */}
+      {/* Connectivity Status Badge */}
+      <div className="flex items-center justify-between">
+        <h2 className="text-3xl font-black text-gray-900 tracking-tighter uppercase">Overview</h2>
+        <div className={`flex items-center gap-2 px-3 py-1.5 rounded-full border text-[10px] font-black uppercase tracking-widest ${
+          connectionStatus === 'online' ? 'bg-green-50 text-green-700 border-green-100' :
+          connectionStatus === 'offline' ? 'bg-red-50 text-red-700 border-red-100' :
+          'bg-gray-50 text-gray-400 border-gray-100'
+        }`}>
+          <div className={`w-2 h-2 rounded-full animate-pulse ${
+            connectionStatus === 'online' ? 'bg-green-500' :
+            connectionStatus === 'offline' ? 'bg-red-500' :
+            'bg-gray-300'
+          }`} />
+          Backend {connectionStatus}
+        </div>
+      </div>
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
         {isLoading
           ? [1, 2, 3, 4].map((i) => <Skeleton key={i} className="h-32" />)

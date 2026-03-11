@@ -18,6 +18,7 @@ router.register(r'flash-sales', FlashSaleViewSet)
 
 urlpatterns = [
     path('', include(router.urls)),
+    path('ping/', PingView.as_view(), name='ping'),
     path('dashboard-stats/', DashboardStatsView.as_view(), name='dashboard-stats'),
     path('mpesa/callback/', MpesaCallbackView.as_view(), name='mpesa-callback'),
 ]

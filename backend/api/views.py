@@ -149,3 +149,8 @@ class MpesaCallbackView(APIView):
         data = request.data
         logger.info(f"M-Pesa Callback Data: {data}")
         return Response({"ResultCode": 0, "ResultDesc": "Success"}, status=status.HTTP_200_OK)
+# Ping endpoint for connectivity checks
+class PingView(APIView):
+    permission_classes = [permissions.AllowAny]
+    def get(self, request):
+        return Response({"status": "ok", "message": "Backend is reachable", "time": timezone.now()}, status=status.HTTP_200_OK)
