@@ -67,6 +67,8 @@ class WishlistSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 class AdvertisementSerializer(serializers.ModelSerializer):
+    image = serializers.URLField(source='image_url', read_only=True)
+
     class Meta:
         model = Advertisement
-        fields = '__all__'
+        fields = ('id', 'title', 'description', 'image', 'image_url', 'link', 'is_active', 'position', 'created_at')
