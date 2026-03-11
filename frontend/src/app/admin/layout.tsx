@@ -16,6 +16,9 @@ import {
   Megaphone
 } from "lucide-react";
 
+/**
+ * Navigation items for the admin sidebar
+ */
 const navigation = [
   { name: "Dashboard", href: "/admin", icon: LayoutDashboard },
   { name: "Products", href: "/admin/products", icon: Package },
