@@ -22,7 +22,7 @@ class ProductImageSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 class ProductSerializer(serializers.ModelSerializer):
-    images = ProductImageSerializer(many=True, read_only=True)
+    images = ProductImageSerializer(many=True, required=False)
     category_name = serializers.ReadOnlyField(source='category.name')
     branch_name = serializers.ReadOnlyField(source='branch.name')
     discount_percentage = serializers.SerializerMethodField()
@@ -36,6 +36,25 @@ class ProductSerializer(serializers.ModelSerializer):
             discount = ((obj.original_price - obj.price) / obj.original_price) * 100
             return round(discount)
         return 0
+
+    def create(self, validated_data):
+        images_data = validated_data.pop('images', [])
+        product = Product.objects.create(**validated_data)
+        for index, image_data in enumerate(images_data):
+            ProductImage.objects.create(product=product, position=index, **image_data)
+        return product
+
+    def update(self, instance, validated_data):
+        images_data = validated_data.pop('images', None)
+        instance = super().update(instance, validated_data)
+        
+        if images_data is not None:
+            # Simple approach: replace all images
+            instance.images.all().delete()
+            for index, image_data in enumerate(images_data):
+                ProductImage.objects.create(product=instance, position=index, **image_data)
+        
+        return instance
 
 class FlashSaleSerializer(serializers.ModelSerializer):
     products = ProductSerializer(many=True, read_only=True)

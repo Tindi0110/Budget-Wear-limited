@@ -29,13 +29,14 @@ interface Product {
   id: string;
   name: string;
   price: number;
+  original_price?: number;
   description: string;
   stock: number;
   branch: string;
   category: string;
   category_name?: string;
   branch_name?: string;
-  images?: Array<{ image_url: string }>;
+  images?: Array<{ id?: string; image_url: string }>;
 }
 
 export default function AdminProducts() {
@@ -48,6 +49,15 @@ export default function AdminProducts() {
   const [productToDelete, setProductToDelete] = useState<string | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingProduct, setEditingProduct] = useState<Product | null>(null);
+  const [imageUrls, setImageUrls] = useState<string[]>([""]);
+
+  useEffect(() => {
+    if (editingProduct && editingProduct.images) {
+      setImageUrls(editingProduct.images.map(img => img.image_url));
+    } else {
+      setImageUrls([""]);
+    }
+  }, [editingProduct]);
 
   useEffect(() => {
     fetchData();
@@ -96,10 +106,12 @@ export default function AdminProducts() {
     const productData = {
       name: formData.get('name'),
       price: formData.get('price'),
+      original_price: formData.get('original_price'),
       stock: formData.get('stock'),
       category: formData.get('category'),
       branch: formData.get('branch'),
       description: formData.get('description'),
+      images: imageUrls.filter(url => url.trim() !== "").map(url => ({ image_url: url }))
     };
 
     try {
@@ -284,6 +296,17 @@ export default function AdminProducts() {
               </div>
 
               <div className="space-y-2">
+                <label className="text-[10px] font-black uppercase tracking-widest text-gray-400 px-1">Original Price (optional)</label>
+                <input 
+                  name="original_price"
+                  type="number" 
+                  defaultValue={editingProduct?.original_price || ''}
+                  placeholder="Before discount"
+                  className="w-full h-14 px-4 bg-gray-50 border border-gray-200 rounded-2xl focus:bg-white focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-500 transition-all font-bold"
+                />
+              </div>
+
+              <div className="space-y-2">
                 <label className="text-[10px] font-black uppercase tracking-widest text-gray-400 px-1">Stock Quantity</label>
                 <input 
                   name="stock"
@@ -334,6 +357,53 @@ export default function AdminProducts() {
                   className="w-full p-4 bg-gray-50 border border-gray-200 rounded-2xl focus:bg-white focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-500 transition-all font-bold text-gray-900"
                   required
                 />
+              </div>
+
+              <div className="col-span-2 space-y-4">
+                <div className="flex items-center justify-between">
+                  <label className="text-[10px] font-black uppercase tracking-widest text-gray-400 px-1">Product Images (URLs)</label>
+                  <button 
+                    type="button"
+                    onClick={() => setImageUrls([...imageUrls, ""])}
+                    className="text-[10px] font-black uppercase tracking-widest text-indigo-600 hover:text-indigo-700 bg-indigo-50 px-3 py-1 rounded-lg transition-colors"
+                  >
+                    + Add More
+                  </button>
+                </div>
+                <div className="space-y-3">
+                  {imageUrls.map((url, index) => (
+                    <div key={index} className="flex gap-2">
+                      <div className="relative flex-1">
+                        <input 
+                          type="url" 
+                          value={url}
+                          onChange={(e) => {
+                            const newUrls = [...imageUrls];
+                            newUrls[index] = e.target.value;
+                            setImageUrls(newUrls);
+                          }}
+                          placeholder="https://images.unsplash.com/..." 
+                          className="w-full h-14 px-4 bg-gray-50 border border-gray-200 rounded-2xl focus:bg-white focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-500 transition-all font-bold pr-12"
+                          required={index === 0}
+                        />
+                        {url && (
+                          <div className="absolute right-4 top-1/2 -translate-y-1/2 w-8 h-8 rounded-lg overflow-hidden border border-gray-100">
+                            <img src={url} className="w-full h-full object-cover" />
+                          </div>
+                        )}
+                      </div>
+                      {imageUrls.length > 1 && (
+                        <button 
+                          type="button"
+                          onClick={() => setImageUrls(imageUrls.filter((_, i) => i !== index))}
+                          className="w-14 h-14 flex items-center justify-center bg-red-50 text-red-600 rounded-2xl hover:bg-red-100 transition-colors"
+                        >
+                          <Trash2 className="w-5 h-5" />
+                        </button>
+                      )}
+                    </div>
+                  ))}
+                </div>
               </div>
 
               <div className="col-span-2 py-4">
