@@ -10,7 +10,8 @@ import {
   Trash2, 
   Eye,
   ExternalLink,
-  Package 
+  Package,
+  Upload
 } from "lucide-react";
 import { toast } from "sonner";
 import { api } from "@/lib/api";
@@ -52,12 +53,27 @@ export default function AdminProducts() {
   const [imageUrls, setImageUrls] = useState<string[]>([""]);
 
   useEffect(() => {
-    if (editingProduct && editingProduct.images) {
+    if (editingProduct && editingProduct.images && editingProduct.images.length > 0) {
       setImageUrls(editingProduct.images.map(img => img.image_url));
     } else {
       setImageUrls([""]);
     }
   }, [editingProduct]);
+
+  const handleImageUpload = async (file: File, index: number) => {
+    try {
+      toast.info("Uploading image...", { id: `upload-${index}` });
+      const response = await api.upload('/upload/', file);
+      if (response && response.image_url) {
+        const newUrls = [...imageUrls];
+        newUrls[index] = response.image_url;
+        setImageUrls(newUrls);
+        toast.success("Image uploaded!", { id: `upload-${index}` });
+      }
+    } catch (error) {
+      toast.error("Failed to upload image", { id: `upload-${index}` });
+    }
+  };
 
   useEffect(() => {
     fetchData();
@@ -373,24 +389,39 @@ export default function AdminProducts() {
                 <div className="space-y-3">
                   {imageUrls.map((url, index) => (
                     <div key={index} className="flex gap-2">
-                      <div className="relative flex-1">
-                        <input 
-                          type="url" 
-                          value={url}
-                          onChange={(e) => {
-                            const newUrls = [...imageUrls];
-                            newUrls[index] = e.target.value;
-                            setImageUrls(newUrls);
-                          }}
-                          placeholder="https://images.unsplash.com/..." 
-                          className="w-full h-14 px-4 bg-gray-50 border border-gray-200 rounded-2xl focus:bg-white focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-500 transition-all font-bold pr-12"
-                          required={index === 0}
-                        />
-                        {url && (
-                          <div className="absolute right-4 top-1/2 -translate-y-1/2 w-8 h-8 rounded-lg overflow-hidden border border-gray-100">
-                            <img src={url} className="w-full h-full object-cover" />
-                          </div>
-                        )}
+                      <div className="relative flex-1 flex gap-2">
+                        <div className="relative flex-1">
+                          <input 
+                            type="url" 
+                            value={url}
+                            onChange={(e) => {
+                              const newUrls = [...imageUrls];
+                              newUrls[index] = e.target.value;
+                              setImageUrls(newUrls);
+                            }}
+                            placeholder="Enter image URL or upload..." 
+                            className="w-full h-14 px-4 bg-gray-50 border border-gray-200 rounded-2xl focus:bg-white focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-500 transition-all font-bold pr-12"
+                            required={index === 0 && !url} // Only strictly required if it's the first and no url yet
+                          />
+                          {url && (
+                            <div className="absolute right-4 top-1/2 -translate-y-1/2 w-8 h-8 rounded-lg overflow-hidden border border-gray-100 bg-white shadow-sm">
+                              <img src={url} className="w-full h-full object-cover" />
+                            </div>
+                          )}
+                        </div>
+                        <label className="flex-none w-14 h-14 bg-indigo-50 text-indigo-600 rounded-2xl flex items-center justify-center cursor-pointer hover:bg-indigo-100 transition-colors shadow-sm" title="Upload Image File">
+                          <Upload className="w-5 h-5" />
+                          <input 
+                            type="file" 
+                            accept="image/*" 
+                            className="hidden" 
+                            onChange={(e) => {
+                              if (e.target.files && e.target.files[0]) {
+                                handleImageUpload(e.target.files[0], index);
+                              }
+                            }} 
+                          />
+                        </label>
                       </div>
                       {imageUrls.length > 1 && (
                         <button 

@@ -10,6 +10,8 @@ from django.db.models.functions import TruncMonth
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
+from rest_framework.parsers import MultiPartParser, FormParser
+from django.core.files.storage import default_storage
 from datetime import datetime, timedelta
 from django.utils import timezone
 import logging
@@ -149,8 +151,26 @@ class MpesaCallbackView(APIView):
         data = request.data
         logger.info(f"M-Pesa Callback Data: {data}")
         return Response({"ResultCode": 0, "ResultDesc": "Success"}, status=status.HTTP_200_OK)
+
+class ImageUploadView(APIView):
+    permission_classes = [permissions.AllowAny]
+    parser_classes = (MultiPartParser, FormParser)
+
+    def post(self, request, *args, **kwargs):
+        file = request.FILES.get('image')
+        if not file:
+            return Response({"error": "No image provided"}, status=status.HTTP_400_BAD_REQUEST)
+        
+        file_name = default_storage.save(file.name, file)
+        file_url = request.build_absolute_uri(default_storage.url(file_name))
+        # Ensure it works cross-protocol in case of proxy issues
+        file_url = file_url.replace('http://', 'https://') if 'onrender.com' in file_url else file_url
+        
+        return Response({"image_url": file_url}, status=status.HTTP_201_CREATED)
+
 # Ping endpoint for connectivity checks
 class PingView(APIView):
     permission_classes = [permissions.AllowAny]
     def get(self, request):
         return Response({"status": "ok", "message": "Backend is reachable", "time": timezone.now()}, status=status.HTTP_200_OK)
+

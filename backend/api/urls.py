@@ -3,7 +3,7 @@ from rest_framework.routers import DefaultRouter
 from .views import (
     UserViewSet, BranchViewSet, CategoryViewSet, ProductViewSet, OrderViewSet, 
     WishlistViewSet, MpesaCallbackView, AdvertisementViewSet,
-    FlashSaleViewSet, DashboardStatsView, PingView
+    FlashSaleViewSet, DashboardStatsView, PingView, ImageUploadView
 )
 
 router = DefaultRouter()
@@ -21,4 +21,5 @@ urlpatterns = [
     path('ping/', PingView.as_view(), name='ping'),
     path('dashboard-stats/', DashboardStatsView.as_view(), name='dashboard-stats'),
     path('mpesa/callback/', MpesaCallbackView.as_view(), name='mpesa-callback'),
+    path('upload/', ImageUploadView.as_view(), name='image-upload'),
 ]

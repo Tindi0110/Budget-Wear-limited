@@ -82,5 +82,15 @@ export const api = {
     return this.fetchWithRetry(endpoint, {
       method: 'DELETE',
     });
+  },
+
+  async upload(endpoint: string, file: File, fieldName: string = 'image') {
+    const formData = new FormData();
+    formData.append(fieldName, file);
+    return this.fetchWithRetry(endpoint, {
+      method: 'POST',
+      body: formData,
+      // Do not set Content-Type header; fetch will automatically set it to multipart/form-data with boundary
+    });
   }
 };
