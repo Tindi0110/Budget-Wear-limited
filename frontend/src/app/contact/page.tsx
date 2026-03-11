@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { Mail, Phone, MapPin, Send, MessageSquare, Clock } from "lucide-react";
 import Link from "next/link";
 import { api } from "@/lib/api";
+import Header from "@/components/Header";
 import { toast } from "sonner";
 
 interface Branch {
@@ -34,18 +35,7 @@ export default function ContactPage() {
 
   return (
     <div className="min-h-screen bg-white">
-      {/* Navigation */}
-      <nav className="border-b border-gray-100 py-6">
-        <div className="max-w-7xl mx-auto px-4 flex items-center justify-between">
-          <Link href="/" className="flex items-center gap-2">
-            <div className="w-10 h-10 bg-indigo-600 rounded-xl flex items-center justify-center">
-              <span className="text-white font-black text-xl">B</span>
-            </div>
-            <span className="text-2xl font-black tracking-tighter text-black">BUDGET WEAR</span>
-          </Link>
-          <Link href="/" className="text-xs font-black text-gray-400 hover:text-black transition-colors uppercase tracking-widest">Back to Store</Link>
-        </div>
-      </nav>
+      <Header />
 
       <main className="max-w-7xl mx-auto px-4 py-20">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-20">

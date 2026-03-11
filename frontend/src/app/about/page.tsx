@@ -2,25 +2,12 @@
 
 import { Info, Target, Users, ShieldCheck, Heart, Award } from "lucide-react";
 import Link from "next/link";
+import Header from "@/components/Header";
 
 export default function AboutPage() {
   return (
     <div className="min-h-screen bg-white">
-      {/* Navigation (Simple Version) */}
-      <nav className="border-b border-gray-100 py-6">
-        <div className="max-w-7xl mx-auto px-4 flex items-center justify-between">
-          <Link href="/" className="flex items-center gap-2">
-            <div className="w-10 h-10 bg-indigo-600 rounded-xl flex items-center justify-center">
-              <span className="text-white font-black text-xl">B</span>
-            </div>
-            <span className="text-2xl font-black tracking-tighter text-black">BUDGET WEAR</span>
-          </Link>
-          <div className="flex items-center gap-8">
-            <Link href="/" className="text-xs font-black text-gray-400 hover:text-black transition-colors uppercase tracking-widest">Back to Store</Link>
-            <Link href="/contact" className="px-6 py-3 bg-black text-white rounded-xl font-black text-xs uppercase tracking-widest hover:bg-indigo-600 transition-all">Get in Touch</Link>
-          </div>
-        </div>
-      </nav>
+      <Header />
 
       <main>
         {/* Hero Section */}

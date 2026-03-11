@@ -2,22 +2,12 @@
 
 import { ShoppingBag, Star, Package, Truck, ShieldCheck, Zap, Globe, Heart } from "lucide-react";
 import Link from "next/link";
+import Header from "@/components/Header";
 
 export default function ServicesPage() {
   return (
     <div className="min-h-screen bg-gray-50/50">
-      {/* Navigation */}
-      <nav className="bg-white border-b border-gray-100 py-6">
-        <div className="max-w-7xl mx-auto px-4 flex items-center justify-between">
-          <Link href="/" className="flex items-center gap-2">
-            <div className="w-10 h-10 bg-indigo-600 rounded-xl flex items-center justify-center">
-              <span className="text-white font-black text-xl">B</span>
-            </div>
-            <span className="text-2xl font-black tracking-tighter text-black">BUDGET WEAR</span>
-          </Link>
-          <Link href="/" className="text-xs font-black text-gray-400 hover:text-black transition-colors uppercase tracking-widest">Back to Store</Link>
-        </div>
-      </nav>
+      <Header />
 
       <main className="max-w-7xl mx-auto px-4 py-24 space-y-32">
         

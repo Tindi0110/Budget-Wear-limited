@@ -18,6 +18,7 @@ import { useRef } from "react";
 import Link from "next/link";
 import { api } from "@/lib/api";
 import { useCart } from "@/lib/CartContext";
+import Header from "@/components/Header";
 
 interface Branch {
   id: string;
@@ -100,21 +101,7 @@ export default function SarabisPage() {
 
   return (
     <div className="min-h-screen bg-[#fff5f7]">
-      {/* Pink Navigation */}
-      <nav className="fixed top-0 w-full z-[100] bg-white/80 backdrop-blur-xl border-b border-pink-100">
-        <div className="max-w-7xl mx-auto px-4 h-20 flex items-center justify-between">
-          <Link href="/" className="flex items-center gap-2 group">
-            <div className="w-10 h-10 bg-pink-500 rounded-xl flex items-center justify-center transition-transform group-hover:rotate-12">
-              <Baby className="text-white w-6 h-6" />
-            </div>
-            <span className="text-2xl font-black tracking-tighter text-gray-900 uppercase">Sarabis <span className="text-pink-500">Baby Shop</span></span>
-          </Link>
-          <div className="flex items-center gap-6">
-            <Link href="/products?category=Baby Shop" className="text-xs font-black text-gray-500 hover:text-pink-500 transition-colors uppercase tracking-widest">Shop All Baby</Link>
-            <Link href="/" className="px-6 py-3 bg-gray-900 text-white rounded-xl font-black text-xs uppercase tracking-widest hover:bg-pink-500 transition-all">Back to Budget Wear</Link>
-          </div>
-        </div>
-      </nav>
+      <Header theme="pink" />
 
       <main className="pt-32 pb-20">
         {/* Baby Shop Hero & Advert Carousel */}

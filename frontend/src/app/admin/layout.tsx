@@ -13,7 +13,8 @@ import {
   LogOut,
   ChevronRight,
   MapPin,
-  Megaphone
+  Megaphone,
+  Flame
 } from "lucide-react";
 
 /**
@@ -26,6 +27,7 @@ const navigation = [
   { name: "Branches", href: "/admin/branches", icon: MapPin },
   { name: "Orders", href: "/admin/orders", icon: ShoppingBag },
   { name: "Adverts", href: "/admin/adverts", icon: Megaphone },
+  { name: "Flash Sales", href: "/admin/flash-sales", icon: Flame },
   { name: "Staff", href: "/admin/staff", icon: Users },
 ];
 
