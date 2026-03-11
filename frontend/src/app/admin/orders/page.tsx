@@ -143,10 +143,9 @@ export default function AdminOrders() {
         )}
       </div>
 
-      {/* Order Details Modal */}
       {isModalOpen && selectedOrder && (
         <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/40 backdrop-blur-md p-4 animate-in fade-in duration-300">
-          <div className="bg-white w-full max-w-2xl rounded-[3rem] shadow-2xl overflow-hidden animate-in zoom-in-95 duration-500">
+          <div className="bg-white w-full max-w-2xl rounded-[3rem] shadow-2xl overflow-hidden animate-in zoom-in-95 duration-500 max-h-[90vh] flex flex-col">
             <div className="p-8 border-b border-gray-50 flex items-center justify-between bg-gray-50/50">
               <div className="flex items-center gap-4">
                  <div className="w-12 h-12 bg-black text-white rounded-2xl flex items-center justify-center shadow-lg">
@@ -162,7 +161,7 @@ export default function AdminOrders() {
               </button>
             </div>
             
-            <div className="p-10 space-y-8">
+            <div className="p-10 space-y-8 overflow-y-auto">
                <div className="grid grid-cols-2 gap-8">
                   <div className="space-y-1">
                      <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Customer</p>

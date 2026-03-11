@@ -103,8 +103,8 @@ export default function AdminAdverts() {
         toast.success("Advertisement published");
       }
       setIsModalOpen(false);
-    } catch (error) {
-      toast.error("Operation failed");
+    } catch (error: any) {
+      toast.error(error.message || "Operation failed");
     }
   };
 
@@ -206,10 +206,9 @@ export default function AdminAdverts() {
         )}
       </div>
 
-      {/* Modern Create Modal */}
       {isModalOpen && (
         <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/40 backdrop-blur-md p-4 animate-in fade-in duration-300">
-          <div className="bg-white w-full max-w-lg rounded-[3rem] shadow-2xl overflow-hidden animate-in zoom-in-95 slide-in-from-bottom-10 duration-500">
+          <div className="bg-white w-full max-w-lg rounded-[3rem] shadow-2xl overflow-hidden animate-in zoom-in-95 slide-in-from-bottom-10 duration-500 max-h-[90vh] flex flex-col">
             <div className="p-10 border-b border-gray-50 flex items-center justify-between bg-gray-50/50">
               <h3 className="text-2xl font-black text-gray-900 tracking-tighter flex items-center gap-4">
                 <div className="w-12 h-12 bg-black text-white rounded-2xl flex items-center justify-center shadow-lg">
@@ -222,7 +221,7 @@ export default function AdminAdverts() {
               </button>
             </div>
             
-            <form className="p-10 space-y-8" onSubmit={handleSubmit}>
+            <form className="p-10 space-y-8 overflow-y-auto" onSubmit={handleSubmit}>
               <div className="space-y-3">
                 <label className="text-[10px] font-black uppercase tracking-[0.2em] text-gray-400 px-1">Campaign Title</label>
                 <input 

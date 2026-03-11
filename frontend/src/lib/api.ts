@@ -7,7 +7,19 @@ async function handleResponse(response: Response, endpoint: string) {
     let errorDetail = '';
     try {
       const error = await response.json();
-      errorDetail = error.message || error.detail || JSON.stringify(error);
+      if (typeof error === 'object' && error !== null) {
+        // Flatten DRF error dictionaries (e.g., { "name": ["This field is required."] })
+        errorDetail = Object.entries(error)
+          .map(([key, value]) => {
+            const val = Array.isArray(value) ? value.join(' ') : value;
+            return key === 'detail' || key === 'non_field_errors' || key === 'message' 
+              ? `${val}` 
+              : `${key}: ${val}`;
+          })
+          .join(' | ');
+      } else {
+        errorDetail = error.message || error.detail || JSON.stringify(error);
+      }
     } catch (e) {
       errorDetail = `Status ${response.status}: ${response.statusText}`;
     }

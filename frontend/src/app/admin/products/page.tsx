@@ -113,8 +113,8 @@ export default function AdminProducts() {
         toast.success("Product created successfully");
       }
       setIsModalOpen(false);
-    } catch (error) {
-      toast.error(editingProduct ? "Failed to update product" : "Failed to create product");
+    } catch (error: any) {
+      toast.error(error.message || "Operation failed");
     }
   };
 
@@ -249,10 +249,9 @@ export default function AdminProducts() {
         )}
       </div>
 
-      {/* Add/Edit Product Modal */}
       {isModalOpen && (
         <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/50 backdrop-blur-md p-4 animate-in fade-in duration-300">
-          <div className="bg-white w-full max-w-2xl rounded-[3rem] shadow-2xl overflow-hidden animate-in zoom-in-95 duration-500">
+          <div className="bg-white w-full max-w-2xl rounded-[3rem] shadow-2xl overflow-hidden animate-in zoom-in-95 duration-500 max-h-[90vh] flex flex-col">
             <div className="p-8 border-b border-gray-50 flex items-center justify-between bg-gray-50/50">
               <h3 className="text-2xl font-black text-gray-900 tracking-tighter uppercase">
                 {editingProduct ? 'Edit Product' : 'Add New Product'}
@@ -260,7 +259,7 @@ export default function AdminProducts() {
               <button onClick={() => setIsModalOpen(false)} className="w-10 h-10 rounded-full hover:bg-gray-100 flex items-center justify-center text-gray-400 hover:text-black font-black transition-all">X</button>
             </div>
             
-            <form className="p-8 grid grid-cols-2 gap-6" onSubmit={handleSubmit}>
+            <form className="p-8 grid grid-cols-1 md:grid-cols-2 gap-6 overflow-y-auto" onSubmit={handleSubmit}>
               <div className="col-span-2 space-y-2">
                 <label className="text-[10px] font-black uppercase tracking-widest text-gray-400 px-1">Product Name</label>
                 <input 

@@ -63,8 +63,8 @@ export default function AdminCategories() {
         toast.success("Category created");
       }
       setIsModalOpen(false);
-    } catch (error) {
-      toast.error(editingCategory ? "Failed to update" : "Failed to create");
+    } catch (error: any) {
+      toast.error(error.message || "Operation failed");
     }
   };
 
@@ -120,10 +120,9 @@ export default function AdminCategories() {
         </div>
       )}
 
-      {/* Add/Edit Category Modal */}
       {isModalOpen && (
         <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/50 backdrop-blur-md p-4 animate-in fade-in duration-300">
-          <div className="bg-white w-full max-w-md rounded-[3rem] shadow-2xl overflow-hidden animate-in zoom-in-95 duration-500">
+          <div className="bg-white w-full max-w-md rounded-[3rem] shadow-2xl overflow-hidden animate-in zoom-in-95 duration-500 max-h-[90vh] flex flex-col">
             <div className="p-10 border-b border-gray-50 flex items-center justify-between bg-gray-50/50">
               <h3 className="text-2xl font-black text-gray-900 tracking-tighter uppercase">
                 {editingCategory ? 'Edit Category' : 'New Category'}
@@ -133,7 +132,7 @@ export default function AdminCategories() {
               </button>
             </div>
             
-            <form className="p-10 space-y-8" onSubmit={handleSubmit}>
+            <form className="p-10 space-y-8 overflow-y-auto" onSubmit={handleSubmit}>
               <div className="space-y-3">
                 <label className="text-[10px] font-black uppercase tracking-widest text-gray-400 px-1">Category Name</label>
                 <input 

@@ -143,10 +143,9 @@ export default function AdminBranches() {
         </div>
       )}
 
-      {/* Add/Edit Branch Modal */}
       {isModalOpen && (
         <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/50 backdrop-blur-md p-4 animate-in fade-in duration-300">
-          <div className="bg-white w-full max-w-lg rounded-[3rem] shadow-2xl overflow-hidden animate-in zoom-in-95 duration-500">
+          <div className="bg-white w-full max-w-lg rounded-[3rem] shadow-2xl overflow-hidden animate-in zoom-in-95 duration-500 max-h-[90vh] flex flex-col">
             <div className="p-10 border-b border-gray-50 flex items-center justify-between bg-gray-50/50">
               <h3 className="text-2xl font-black text-gray-900 tracking-tighter uppercase">
                 {editingBranch ? 'Edit Location' : 'Add Location'}
@@ -156,7 +155,7 @@ export default function AdminBranches() {
               </button>
             </div>
             
-            <form className="p-10 space-y-6" onSubmit={handleSubmit}>
+            <form className="p-10 space-y-6 overflow-y-auto" onSubmit={handleSubmit}>
               <div className="space-y-2">
                 <label className="text-[10px] font-black uppercase tracking-widest text-gray-400 px-1">Branch Name</label>
                 <input 
