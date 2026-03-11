@@ -1,5 +1,5 @@
 // Normalize URL to never end with a slash
-const BASE = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
+const BASE = process.env.NEXT_PUBLIC_API_URL || 'https://budget-wear-limited-backend1.onrender.com/api';
 const API_BASE_URL = BASE.endsWith('/') ? BASE.slice(0, -1) : BASE;
 
 async function handleResponse(response: Response, endpoint: string) {
