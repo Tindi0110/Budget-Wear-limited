@@ -31,6 +31,8 @@ interface Advert {
 export default function AdminAdverts() {
   const [adverts, setAdverts] = useState<Advert[]>([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [advertToDelete, setAdvertToDelete] = useState<string | null>(null);
   const [editingAdvert, setEditingAdvert] = useState<Advert | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
@@ -50,11 +52,19 @@ export default function AdminAdverts() {
     }
   };
 
-  const handleDelete = async (id: string) => {
+  const handleDeleteClick = (id: string) => {
+    setAdvertToDelete(id);
+    setShowDeleteModal(true);
+  };
+
+  const confirmDelete = async () => {
+    if (!advertToDelete) return;
     try {
-      await api.delete(`/adverts/${id}/`);
-      setAdverts(adverts.filter(a => a.id !== id));
+      await api.delete(`/adverts/${advertToDelete}/`);
+      setAdverts(adverts.filter(a => a.id !== advertToDelete));
       toast.success("Advertisement deleted");
+      setShowDeleteModal(false);
+      setAdvertToDelete(null);
     } catch (error) {
       toast.error("Failed to delete advertisement");
     }
@@ -174,7 +184,7 @@ export default function AdminAdverts() {
                           <Edit className="w-4 h-4" />
                         </button>
                         <button 
-                          onClick={() => handleDelete(advert.id)}
+                          onClick={() => handleDeleteClick(advert.id)}
                           className="w-10 h-10 bg-white shadow-md border border-gray-100 text-gray-600 hover:text-red-500 hover:border-red-500 rounded-xl flex items-center justify-center transition-all"
                         >
                           <Trash2 className="w-4 h-4" />

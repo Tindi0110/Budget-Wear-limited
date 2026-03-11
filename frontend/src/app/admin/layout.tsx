@@ -1,7 +1,8 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { toast } from "sonner";
+import { api } from "@/lib/api";
 import { 
   LayoutDashboard, 
   Package, 
@@ -30,6 +31,14 @@ export default function AdminLayout({
   children: React.ReactNode;
 }) {
   const pathname = usePathname();
+  const router = useRouter();
+  
+  const handleLogout = () => {
+    localStorage.removeItem('token');
+    localStorage.removeItem('user');
+    toast.success("Logged out successfully");
+    router.push('/');
+  };
 
   return (
     <div className="min-h-screen bg-gray-50 flex text-gray-900">
@@ -70,7 +79,10 @@ export default function AdminLayout({
         </nav>
 
         <div className="p-4 border-t border-gray-100 mt-auto">
-          <button className="flex items-center gap-3 px-3 py-2 w-full text-gray-600 hover:bg-red-50 hover:text-red-700 rounded-lg transition-colors">
+          <button 
+            onClick={handleLogout}
+            className="flex items-center gap-3 px-3 py-2 w-full text-gray-600 hover:bg-red-50 hover:text-red-700 rounded-lg transition-colors"
+          >
             <LogOut className="w-5 h-5" />
             Logout
           </button>

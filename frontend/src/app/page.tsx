@@ -19,7 +19,8 @@ import {
   Globe,
   Loader2,
   ChevronRight,
-  Clock
+  Clock,
+  X
 } from "lucide-react";
 import { useCart } from "@/lib/CartContext";
 import { api } from "@/lib/api";
@@ -69,6 +70,7 @@ interface FlashSaleProp {
 
 export default function Home() {
   const [isSearchOpen, setIsSearchOpen] = useState(false);
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const { addItem, count } = useCart();
 
@@ -182,12 +184,67 @@ export default function Home() {
                   <span className="absolute top-0 right-0 w-5 h-5 bg-indigo-600 text-white text-[10px] font-black rounded-full flex items-center justify-center border-2 border-white animate-bounce">{count}</span>
                 )}
               </Link>
-              <button className="lg:hidden p-2"><Menu className="w-6 h-6 text-black" /></button>
+               <button 
+                onClick={() => setIsMenuOpen(!isMenuOpen)}
+                className="lg:hidden p-2 hover:bg-gray-100 rounded-xl transition-colors"
+               >
+                 <Menu className="w-6 h-6 text-black" />
+               </button>
             </div>
           </div>
         </div>
       </nav>
 
+      {/* Mobile Menu Overlay */}
+      {isMenuOpen && (
+        <div className="fixed inset-0 z-[200] lg:hidden">
+          <div className="absolute inset-0 bg-black/40 backdrop-blur-sm" onClick={() => setIsMenuOpen(false)} />
+          <div className="absolute top-0 left-0 bottom-0 w-[80%] max-w-sm bg-white shadow-2xl animate-in slide-in-from-left duration-500 flex flex-col">
+            <div className="p-6 border-b border-gray-100 flex items-center justify-between">
+               <div className="flex items-center gap-2">
+                  <div className="w-8 h-8 bg-indigo-600 rounded-lg flex items-center justify-center">
+                    <span className="text-white font-black text-sm">B</span>
+                  </div>
+                  <span className="text-lg font-black tracking-tighter">BUDGET WEAR</span>
+               </div>
+               <button onClick={() => setIsMenuOpen(false)} className="p-2 hover:bg-gray-100 rounded-full transition-all">
+                  <X className="w-5 h-5 text-gray-400" />
+               </button>
+            </div>
+            
+            <div className="flex-1 overflow-y-auto p-4 space-y-2">
+               <p className="text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] px-3 mb-2">Navigation</p>
+               <Link href="/" className="flex items-center gap-3 p-3 rounded-2xl bg-indigo-50 text-indigo-700 font-bold text-sm">
+                  <TrendingUp className="w-5 h-5" /> Home
+               </Link>
+               <Link href="/products" className="flex items-center gap-3 p-3 rounded-2xl hover:bg-gray-50 text-gray-600 font-bold text-sm transition-all">
+                  <ShoppingBag className="w-5 h-5" /> Shop All
+               </Link>
+               <Link href="/branches" className="flex items-center gap-3 p-3 rounded-2xl hover:bg-gray-50 text-gray-600 font-bold text-sm transition-all">
+                  <MapPin className="w-5 h-5" /> Branches
+               </Link>
+
+               <div className="pt-6">
+                  <p className="text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] px-3 mb-4">Categories</p>
+                  <div className="space-y-1">
+                    {categories.map(cat => (
+                      <Link key={cat.id} href={`/products?category=${cat.name}`} className="flex items-center justify-between p-3 rounded-2xl hover:bg-gray-50 text-gray-600 text-sm font-bold transition-all group">
+                        <span className="uppercase tracking-tight">{cat.name}</span>
+                        <ChevronRight className="w-4 h-4 text-gray-300 group-hover:text-indigo-600" />
+                      </Link>
+                    ))}
+                  </div>
+               </div>
+            </div>
+
+            <div className="p-6 border-t border-gray-100 bg-gray-50/50">
+               <Link href="/admin" className="flex items-center justify-center gap-2 w-full py-4 bg-black text-white rounded-2xl font-black text-xs uppercase tracking-widest shadow-xl active:scale-95 transition-all">
+                  Admin Dashboard
+               </Link>
+            </div>
+          </div>
+        </div>
+      )}
       {isLoading ? (
         <div className="min-h-screen flex items-center justify-center">
           <Loader2 className="w-12 h-12 text-indigo-600 animate-spin" />
