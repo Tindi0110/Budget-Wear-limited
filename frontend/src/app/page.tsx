@@ -354,7 +354,7 @@ export default function Home() {
                        <Link href="/baby-shop" className="flex-1 bg-pink-100 rounded-3xl p-6 relative overflow-hidden group">
                           <div className="relative z-10">
                              <p className="text-[10px] font-black text-pink-600 uppercase tracking-widest">Special</p>
-                             <h4 className="text-lg font-black text-gray-900 leading-tight mt-2 uppercase">Baby <br/> Wear</h4>
+                             <h4 className="text-lg font-black text-gray-900 leading-tight mt-2 uppercase">Sarabis <br/> Baby Shop</h4>
                              <button className="mt-4 text-[10px] font-black text-gray-900 border-b-2 border-pink-400">VISIT SHOP</button>
                           </div>
                           <Baby className="absolute -bottom-4 -right-4 w-24 h-24 text-pink-200/50 -rotate-12 transition-transform group-hover:scale-110" />
@@ -365,12 +365,12 @@ export default function Home() {
                  {/* High Trust Section */}
                  <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                     {[
-                       { icon: Globe, label: "EX-UK Sourced", desc: "Premium Quality" },
-                       { icon: ShieldCheck, label: "Safe Payment", desc: "M-Pesa Integrated" },
-                       { icon: ArrowRight, label: "Fast Delivery", desc: "Kenya-Wide" },
-                       { icon: Package, label: "Bulk Options", desc: "Business Bales" },
+                       { icon: Globe, label: "EX-UK Sourced", desc: "Premium Quality", href: "/products?tag=ex-uk" },
+                       { icon: ShieldCheck, label: "Safe Payment", desc: "M-Pesa Integrated", href: "/delivery" },
+                       { icon: ArrowRight, label: "Fast Delivery", desc: "Kenya-Wide", href: "/delivery" },
+                       { icon: Package, label: "Bulk Options", desc: "Business Bales", href: "/products?tag=bulk" },
                     ].map((item, i) => (
-                      <div key={i} className="bg-white p-5 rounded-3xl border border-gray-100 shadow-sm flex items-center gap-4 group hover:shadow-md transition-shadow">
+                      <Link key={i} href={item.href} className="bg-white p-5 rounded-3xl border border-gray-100 shadow-sm flex items-center gap-4 group hover:shadow-md transition-shadow">
                          <div className="w-10 h-10 bg-indigo-50 text-indigo-600 rounded-xl flex items-center justify-center group-hover:bg-indigo-600 group-hover:text-white transition-colors">
                             <item.icon className="w-5 h-5" />
                          </div>
@@ -378,7 +378,7 @@ export default function Home() {
                             <p className="text-xs font-black text-gray-900 uppercase tracking-tight truncate">{item.label}</p>
                             <p className="text-[10px] font-bold text-gray-400">{item.desc}</p>
                          </div>
-                      </div>
+                      </Link>
                     ))}
                  </div>
               </div>
@@ -541,7 +541,7 @@ export default function Home() {
                          {branches.slice(0, 4).map(b => (
                            <li key={b.id}><Link href="/branches" className="hover:text-white transition-colors uppercase">{b.name}</Link></li>
                          ))}
-                         <li><Link href="/baby-shop" className="text-pink-500 hover:text-pink-400 font-black transition-colors uppercase">The Baby Shop</Link></li>
+                         <li><Link href="/baby-shop" className="text-pink-500 hover:text-pink-400 font-black transition-colors uppercase">Sarabis Baby Shop</Link></li>
                       </ul>
                    </div>
                    <div className="space-y-6">
@@ -549,7 +549,6 @@ export default function Home() {
                       <ul className="space-y-4 text-gray-500 font-bold text-sm">
                          <li><Link href="/contact" className="hover:text-white transition-colors uppercase">Contact Us</Link></li>
                          <li><Link href="/delivery" className="hover:text-white transition-colors uppercase">Delivery Info</Link></li>
-                         <li><Link href="/admin" className="text-indigo-400 hover:text-indigo-300 font-black transition-colors underline decoration-2 underline-offset-4 uppercase">Admin Dashboard</Link></li>
                       </ul>
                    </div>
                 </div>

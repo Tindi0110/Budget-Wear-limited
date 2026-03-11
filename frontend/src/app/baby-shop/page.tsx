@@ -65,7 +65,7 @@ export default function BabyShop() {
 
           <div className="flex items-center gap-2">
             <Baby className="w-6 h-6 text-pink-600" />
-            <span className="text-2xl font-black tracking-tighter text-black uppercase">THE BABY SHOP</span>
+            <span className="text-2xl font-black tracking-tighter text-black uppercase">SARABIS BABY SHOP</span>
           </div>
 
           <div className="flex items-center gap-6">

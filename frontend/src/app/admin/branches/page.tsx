@@ -189,7 +189,7 @@ export default function AdminBranches() {
                   className="w-full h-14 px-6 bg-gray-50 border border-gray-100 rounded-2xl focus:bg-white focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-500 transition-all font-bold"
                 >
                    <option value="thrift_store">Thrift Store</option>
-                   <option value="baby_shop">Baby Shop</option>
+                   <option value="baby_shop">Sarabis Baby Shop</option>
                 </select>
               </div>
 
