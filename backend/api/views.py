@@ -1,5 +1,5 @@
 from rest_framework import viewsets, permissions, filters
-from .models import User, Branch, Category, Product, ProductImage, Order, OrderItem, Wishlist, Advertisement
+from .models import User, Branch, Category, Product, ProductImage, Order, OrderItem, Wishlist, Advertisement, FlashSale
 from .serializers import (
     UserSerializer, BranchSerializer, CategorySerializer, 
     ProductSerializer, OrderSerializer, WishlistSerializer, 

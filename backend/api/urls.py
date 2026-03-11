@@ -1,7 +1,8 @@
 from django.urls import path, include
 from rest_framework.routers import DefaultRouter
 from .views import (
-    ProductViewSet, OrderViewSet, WishlistViewSet, MpesaCallbackView, AdvertisementViewSet,
+    UserViewSet, BranchViewSet, CategoryViewSet, ProductViewSet, OrderViewSet, 
+    WishlistViewSet, MpesaCallbackView, AdvertisementViewSet,
     FlashSaleViewSet, DashboardStatsView
 )
 

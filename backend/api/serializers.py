@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import User, Branch, Category, Product, ProductImage, Order, OrderItem, Wishlist, Advertisement
+from .models import User, Branch, Category, Product, ProductImage, Order, OrderItem, Wishlist, Advertisement, FlashSale
 
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
