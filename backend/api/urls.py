@@ -3,7 +3,7 @@ from rest_framework.routers import DefaultRouter
 from .views import (
     UserViewSet, BranchViewSet, CategoryViewSet, ProductViewSet, OrderViewSet, 
     WishlistViewSet, MpesaCallbackView, AdvertisementViewSet,
-    FlashSaleViewSet, DashboardStatsView
+    FlashSaleViewSet, DashboardStatsView, PingView
 )
 
 router = DefaultRouter()
