@@ -11,6 +11,7 @@ import Header from "@/components/Header";
 import ProductModal from "@/components/ProductModal";
 import { useSearchParams } from "next/navigation";
 import { Loader2 } from "lucide-react";
+import { Suspense } from "react";
 
 interface Product {
   id: string;
@@ -35,7 +36,7 @@ interface Branch {
   name: string;
 }
 
-export default function ProductsPage() {
+function ProductsContent() {
   const [products, setProducts] = useState<Product[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
   const [branches, setBranches] = useState<Branch[]>([]);
@@ -284,5 +285,17 @@ export default function ProductsPage() {
         </div>
       </main>
     </div>
+  );
+}
+
+export default function ProductsPage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen flex items-center justify-center">
+        <Loader2 className="w-12 h-12 text-indigo-600 animate-spin" />
+      </div>
+    }>
+      <ProductsContent />
+    </Suspense>
   );
 }
