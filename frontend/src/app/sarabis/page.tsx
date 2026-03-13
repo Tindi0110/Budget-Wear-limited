@@ -20,6 +20,7 @@ import { api } from "@/lib/api";
 import { useCart } from "@/lib/CartContext";
 import Header from "@/components/Header";
 import { useBranch } from "@/lib/BranchContext";
+import ProductModal from "@/components/ProductModal";
 
 interface Branch {
   id: string;
@@ -54,6 +55,7 @@ interface Product {
   branch_name?: string;
   category_name?: string;
   images?: Array<{ image_url: string }>;
+  stock: number;
 }
 
 export default function SarabisPage() {
@@ -62,6 +64,8 @@ export default function SarabisPage() {
   const [adverts, setAdverts] = useState<Advert[]>([]);
   const [flashSales, setFlashSales] = useState<FlashSale[]>([]);
   const [currentAdIndex, setCurrentAdIndex] = useState(0);
+  const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const { addItem } = useCart();
   const { activeBranch } = useBranch();
@@ -111,6 +115,11 @@ export default function SarabisPage() {
   return (
     <div className="min-h-screen bg-[#fff5f7]">
       <Header theme="pink" />
+      <ProductModal 
+        product={selectedProduct} 
+        isOpen={isModalOpen} 
+        onClose={() => setIsModalOpen(false)} 
+      />
 
       <main className="pt-32 pb-20">
         {/* Baby Shop Hero & Advert Carousel */}
@@ -212,22 +221,29 @@ export default function SarabisPage() {
                       {flashSaleProducts.map((p) => {
                         const discount = p.original_price ? Math.round(((p.original_price - p.price) / p.original_price) * 100) : null;
                         return (
-                         <div key={p.id} className="min-w-[200px] w-[200px] group cursor-pointer">
-                            <div className="aspect-square bg-pink-50/30 rounded-2xl overflow-hidden mb-4 relative shadow-sm border border-pink-50">
-                               <Link href={`/products/${p.id}`} className="block w-full h-full">
-                                {p.images?.[0] ? (
-                                  <img src={p.images[0].image_url} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" alt={p.name} />
-                                ) : (
-                                  <div className="w-full h-full flex items-center justify-center"><Baby className="w-10 h-10 text-pink-200" /></div>
-                                )}
-                               </Link>
-                              {discount && (
+                         <div key={p.id} className="bg-white rounded-[2.5rem] p-4 border border-pink-100 shadow-sm hover:shadow-xl transition-all group group-hover:-translate-y-1">
+                     <div className="aspect-[3/4] bg-pink-50/30 rounded-[2rem] overflow-hidden mb-4 relative border border-pink-50 flex-shrink-0">
+                         <button 
+                           onClick={() => { setSelectedProduct(p); setIsModalOpen(true); }}
+                           className="block w-full h-full cursor-pointer"
+                         >
+                             {p.images?.[0] ? (
+                               <img src={p.images[0].image_url} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" alt={p.name} />
+                             ) : (
+                               <div className="w-full h-full flex items-center justify-center"><Package className="w-10 h-10 text-pink-200" /></div>
+                             )}
+                         </button>
+                         <button 
+                            onClick={(e) => { e.stopPropagation(); addItem({ ...p, image: p.images?.[0]?.image_url }); }}
+                            className="absolute bottom-4 right-4 w-12 h-12 bg-white text-pink-600 rounded-2xl shadow-xl hover:bg-pink-600 hover:text-white transition-all transform active:scale-95 flex items-center justify-center opacity-0 group-hover:opacity-100 translate-y-2 group-hover:translate-y-0"
+                         >
+                            <ShoppingBag className="w-6 h-6" />
+                         </button>
+                         {discount && (
                                 <div className="absolute top-2 right-2 bg-pink-100 text-pink-600 px-2 py-1 rounded-lg text-[10px] font-black">
                                   -{discount}%
                                 </div>
                               )}
-                            </div>
-                            <div className="space-y-1">
                                <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest line-clamp-1">{p.name}</p>
                                <div className="flex items-center gap-2">
                                  <p className="text-pink-500 font-black text-lg">Ksh {p.price.toLocaleString()}</p>

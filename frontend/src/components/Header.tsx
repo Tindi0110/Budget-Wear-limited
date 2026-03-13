@@ -51,12 +51,18 @@ export default function Header({ theme = 'default' }: { theme?: 'default' | 'pin
     api.get("/categories/").then(setCategories).catch(console.error);
   }, []);
 
+  // Determine if we should use the pink theme based on path OR selected branch
+  const isCurrentlyPink = theme === 'pink' || 
+                         pathname.includes('sarabis') || 
+                         pathname.includes('baby-shop') ||
+                         activeBranch?.name.toLowerCase().includes('baby');
+
   const searchResults = products.filter(p => 
     p.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
     (p.category_name?.toLowerCase() || "").includes(searchQuery.toLowerCase())
   ).slice(0, 5);
 
-  const isPink = theme === 'pink';
+  const isPink = isCurrentlyPink;
   const bgColor = isPink ? 'bg-white/80 border-pink-100' : 'bg-white/90 border-gray-100';
   const logoBg = isPink ? 'bg-pink-500' : 'bg-indigo-600';
   const activeLinkHover = isPink ? 'hover:text-pink-600' : 'hover:text-indigo-600';
@@ -188,12 +194,12 @@ export default function Header({ theme = 'default' }: { theme?: 'default' | 'pin
           </div>
         </div>
         
-        {/* Sarabis Baby Sub-Header */}
+        {/* Sarabis Baby Sub-Header - Persistent if in baby shop context */}
         {isPink && (
-          <div className="border-t border-pink-50 bg-pink-50/50 backdrop-blur-md hidden md:block">
-             <div className="max-w-7xl mx-auto px-4 h-12 flex items-center justify-center gap-8 overflow-x-auto custom-scrollbar">
+          <div className="border-t border-pink-50 bg-pink-50/50 backdrop-blur-md">
+             <div className="max-w-7xl mx-auto px-4 h-12 flex items-center justify-center gap-4 sm:gap-8 overflow-x-auto no-scrollbar">
                 {babyCategories.map((cat, i) => (
-                   <Link key={i} href={`/products?category=Baby Shop&subcategory=${encodeURIComponent(cat)}`} className="text-[10px] font-black text-pink-500 uppercase tracking-[0.1em] hover:text-pink-700 whitespace-nowrap">
+                   <Link key={i} href={`/products?category=Baby Shop&subcategory=${encodeURIComponent(cat)}`} className="text-[10px] sm:text-xs font-black text-pink-500 uppercase tracking-[0.1em] hover:text-pink-700 whitespace-nowrap px-2 py-1">
                       {cat}
                    </Link>
                 ))}

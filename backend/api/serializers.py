@@ -18,10 +18,22 @@ class CategorySerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 class ProductImageSerializer(serializers.ModelSerializer):
+    image_url = serializers.SerializerMethodField()
+    
     class Meta:
         model = ProductImage
         fields = '__all__'
         read_only_fields = ('product',)
+
+    def get_image_url(self, obj):
+        if not obj.image_url:
+            return None
+        if obj.image_url.startswith('http'):
+            return obj.image_url
+        request = self.context.get('request')
+        if request:
+            return request.build_absolute_uri(obj.image_url)
+        return obj.image_url
 
 class ProductSerializer(serializers.ModelSerializer):
     images = ProductImageSerializer(many=True, required=False)
@@ -119,8 +131,22 @@ class WishlistSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 class AdvertisementSerializer(serializers.ModelSerializer):
-    image = serializers.URLField(source='image_url', read_only=True)
+    image = serializers.SerializerMethodField()
+    image_url = serializers.SerializerMethodField()
 
     class Meta:
         model = Advertisement
         fields = ('id', 'title', 'description', 'image', 'image_url', 'link', 'is_active', 'position', 'created_at')
+
+    def get_image(self, obj):
+        return self.get_image_url(obj)
+
+    def get_image_url(self, obj):
+        if not obj.image_url:
+            return None
+        if obj.image_url.startswith('http'):
+            return obj.image_url
+        request = self.context.get('request')
+        if request:
+            return request.build_absolute_uri(obj.image_url)
+        return obj.image_url

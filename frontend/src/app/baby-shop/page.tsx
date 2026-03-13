@@ -18,19 +18,24 @@ import { useCart } from "@/lib/CartContext";
 import { toast } from "sonner";
 import Header from "@/components/Header";
 import { useBranch } from "@/lib/BranchContext";
+import ProductModal from "@/components/ProductModal";
 
 interface Product {
   id: string;
   name: string;
   price: number;
+  original_price?: number;
   category_name?: string;
   images?: Array<{ image_url: string }>;
   branch_name?: string;
+  stock: number;
 }
 
 export default function BabyShop() {
   const [products, setProducts] = useState<Product[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
   const { addItem } = useCart();
   const { activeBranch } = useBranch();
 
@@ -59,6 +64,11 @@ export default function BabyShop() {
   return (
     <div className="min-h-screen bg-white">
       <Header theme="pink" />
+      <ProductModal 
+        product={selectedProduct} 
+        isOpen={isModalOpen} 
+        onClose={() => setIsModalOpen(false)} 
+      />
 
       <main className="pt-32 pb-20 px-4">
         {/* Hero Banner */}
@@ -133,19 +143,20 @@ export default function BabyShop() {
                 <Link href="/products" className="text-pink-600 font-bold hover:underline">Browse Main Shop</Link>
               </div>
             ) : (
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
-                {products.map((p) => (
-                  <div key={p.id} className="group cursor-pointer">
-                    <div className="aspect-[3/4] bg-gray-50 rounded-[2.5rem] overflow-hidden mb-6 relative shadow-sm transition-all duration-500 hover:shadow-xl hover:shadow-pink-50">
-                      <Link href={`/products/${p.id}`} className="block w-full h-full">
-                        {p.images && p.images[0] ? (
-                          <img src={p.images[0].image_url} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" alt={p.name} />
-                        ) : (
-                          <div className="w-full h-full flex items-center justify-center">
-                            <Package className="w-12 h-12 text-pink-100" />
-                          </div>
-                        )}
-                      </Link>
+              <div className="grid grid-cols-2 lg:grid-cols-4 gap-6 sm:gap-8">
+               {products.map((p) => (
+                  <div key={p.id} className="bg-white rounded-[2rem] p-4 border border-gray-100 shadow-sm hover:shadow-xl transition-all group group-hover:-translate-y-1">
+                     <div className="aspect-[3/4] bg-gray-50 rounded-2xl overflow-hidden mb-4 relative border border-gray-50">
+                         <button 
+                           onClick={() => { setSelectedProduct(p); setIsModalOpen(true); }}
+                           className="block w-full h-full cursor-pointer"
+                         >
+                             {p.images?.[0] ? (
+                               <img src={p.images[0].image_url} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" alt={p.name} />
+                             ) : (
+                               <div className="w-full h-full flex items-center justify-center"><Package className="w-10 h-10 text-gray-200" /></div>
+                             )}
+                         </button>
                       <button 
                         onClick={() => addItem({ 
                           id: p.id, 
@@ -155,24 +166,25 @@ export default function BabyShop() {
                           branch_name: p.branch_name,
                           category_name: p.category_name
                         })}
-                        className="absolute top-6 right-6 p-3 bg-white/80 backdrop-blur-md rounded-2xl opacity-0 group-hover:opacity-100 transition-all hover:bg-white scale-90 group-hover:scale-100 shadow-xl"
+                        className="absolute top-4 right-4 p-2 bg-white/80 backdrop-blur-md rounded-xl opacity-0 group-hover:opacity-100 transition-all hover:bg-white scale-90 group-hover:scale-100 shadow-xl"
                       >
-                        <ShoppingBag className="w-5 h-5 text-pink-600" />
+                        <ShoppingBag className="w-4 h-4 text-pink-600" />
                       </button>
-                      <div className="absolute top-6 left-6 flex items-center gap-1.5 px-3 py-1.5 bg-pink-100 text-pink-700 rounded-xl text-[10px] font-black shadow-sm uppercase">
+                      <div className="absolute top-4 left-4 flex items-center gap-1.5 px-3 py-1.5 bg-pink-100 text-pink-700 rounded-xl text-[10px] font-black shadow-sm uppercase">
                         {p.category_name || "Baby Shop"}
                       </div>
                     </div>
-                    <Link href={`/products/${p.id}`} className="px-2 space-y-1 block">
-                      <h4 className="font-black text-lg text-black group-hover:text-pink-600 transition-colors uppercase tracking-tight line-clamp-1">{p.name}</h4>
-                      <div className="flex items-center justify-between">
-                        <p className="text-pink-600 font-black text-lg">Ksh {p.price.toLocaleString()}</p>
-                        <div className="flex items-center gap-1.5">
-                          <Star className="w-4 h-4 fill-yellow-400 text-yellow-400" />
-                          <span className="text-gray-400 text-xs font-black">5.0</span>
-                        </div>
-                      </div>
-                    </Link>
+                        <button 
+                          onClick={() => { setSelectedProduct(p); setIsModalOpen(true); }}
+                          className="space-y-2 block w-full text-left"
+                        >
+                           <h4 className="font-bold text-sm text-gray-900 line-clamp-1 uppercase tracking-tight group-hover:text-pink-600 transition-colors">{p.name}</h4>
+                           <div className="flex items-center gap-1 text-yellow-400">
+                             <Star className="w-3 h-3 fill-current" />
+                             <span className="text-gray-500 text-[10px] font-black">4.9</span>
+                           </div>
+                           <p className="text-pink-600 font-black text-lg leading-none">Ksh {Number(p.price).toLocaleString()}</p>
+                        </button>
                   </div>
                 ))}
               </div>

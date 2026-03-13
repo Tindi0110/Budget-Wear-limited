@@ -8,6 +8,9 @@ import { api } from "@/lib/api";
 import { toast } from "sonner";
 import { useBranch } from "@/lib/BranchContext";
 import Header from "@/components/Header";
+import ProductModal from "@/components/ProductModal";
+import { useSearchParams } from "next/navigation";
+import { Loader2 } from "lucide-react";
 
 interface Product {
   id: string;
@@ -40,11 +43,14 @@ export default function ProductsPage() {
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const [selectedBranch, setSelectedBranch] = useState<string | null>(null);
+  const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
   const [filtersOpen, setFiltersOpen] = useState(false);
 
-  const { addItem, count } = useCart();
+  const { count, addItem } = useCart();
   const { activeBranch } = useBranch();
-  const searchParams = typeof window !== "undefined" ? new URLSearchParams(window.location.search) : null;
+  const searchParams = useSearchParams();
+  const subcategory = searchParams.get('subcategory');
   const initialCategory = searchParams?.get("category");
 
   useEffect(() => {
@@ -57,7 +63,11 @@ export default function ProductsPage() {
     const loadData = async () => {
       try {
         setIsLoading(true);
-        const urlBase = activeBranch ? `?branch=${activeBranch.id}` : "";
+        const branchParam = activeBranch ? `branch=${activeBranch.id}` : "";
+        const subcatParam = subcategory ? `subcategory=${encodeURIComponent(subcategory)}` : "";
+        const query = [branchParam, subcatParam].filter(Boolean).join('&');
+        const urlBase = query ? `?${query}` : "";
+        
         const [prods, cats, brs] = await Promise.all([
           api.get(`/products/${urlBase}`),
           api.get("/categories/"),
@@ -73,15 +83,15 @@ export default function ProductsPage() {
       }
     };
     loadData();
-  }, [activeBranch]);
+  }, [activeBranch, subcategory]);
 
   const filtered = products.filter((p) => {
     const matchSearch =
       p.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
       p.description.toLowerCase().includes(searchQuery.toLowerCase());
     const matchCategory = !selectedCategory || p.category_name === selectedCategory;
-    // Removed matchBranch because it is now handled server-side
-    return matchSearch && matchCategory;
+    const matchBranch = !selectedBranch || p.branch_name === selectedBranch;
+    return matchSearch && matchCategory && matchBranch;
   });
 
   const Skeleton = () => (
@@ -95,7 +105,13 @@ export default function ProductsPage() {
   );
 
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen bg-gray-50/50">
+      <Header />
+      <ProductModal 
+        product={selectedProduct} 
+        isOpen={isModalOpen} 
+        onClose={() => setIsModalOpen(false)} 
+      />
       {/* Navbar */}
       <nav className="fixed top-0 w-full z-50 bg-white/80 backdrop-blur-xl border-b border-gray-100">
         <div className="max-w-7xl mx-auto px-4 h-20 flex items-center justify-between gap-4">
@@ -199,21 +215,18 @@ export default function ProductsPage() {
           ) : (
             <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-6">
               {filtered.map((p) => (
-                <div key={p.id} className="bg-white rounded-3xl p-5 border border-gray-100 shadow-sm hover:shadow-2xl transition-all group flex flex-col h-full">
-                  <div className="aspect-[3/4] bg-gray-50 rounded-2xl overflow-hidden mb-6 relative border border-gray-50 flex-shrink-0">
-                    <Link href={`/products/${p.id}`} className="block w-full h-full">
-                      {p.images && p.images.length > 0 ? (
-                        <img 
-                          src={p.images[0].image_url} 
-                          alt={p.name}
-                          className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
-                        />
-                      ) : (
-                        <div className="w-full h-full flex items-center justify-center">
-                          <Package className="w-12 h-12 text-gray-200" />
-                        </div>
-                      )}
-                    </Link>
+                <div key={p.id} className="bg-white rounded-[2rem] p-4 border border-gray-100 shadow-sm hover:shadow-xl transition-all group group-hover:-translate-y-1">
+                   <div className="aspect-[3/4] bg-gray-50 rounded-2xl overflow-hidden mb-4 relative border border-gray-50">
+                       <button 
+                         onClick={() => { setSelectedProduct(p); setIsModalOpen(true); }}
+                         className="block w-full h-full cursor-pointer"
+                       >
+                           {p.images?.[0] ? (
+                             <img src={p.images[0].image_url} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" alt={p.name} />
+                           ) : (
+                             <div className="w-full h-full flex items-center justify-center"><Package className="w-10 h-10 text-gray-200" /></div>
+                           )}
+                       </button>
                     
                     <div className="absolute top-3 left-3 flex flex-col gap-2">
                        <div className="flex items-center gap-1.5 px-3 py-1.5 bg-black/60 backdrop-blur-md rounded-xl text-white text-[10px] font-black uppercase tracking-widest shadow-lg">
@@ -243,20 +256,27 @@ export default function ProductsPage() {
                       </div>
                     )}
                   </div>
-                  <Link href={`/products/${p.id}`} className="block px-1 space-y-2 mt-auto">
-                    <h4 className="font-bold text-sm text-gray-900 group-hover:text-indigo-600 transition-colors line-clamp-1 truncate uppercase tracking-tight">{p.name}</h4>
-                    <div className="flex items-end justify-between">
-                      <div className="space-y-1">
-                        <p className="text-black font-black text-lg leading-none">Ksh {Number(p.price).toLocaleString()}</p>
-                        {p.original_price && (
-                          <p className="text-[11px] text-gray-400 font-bold line-through">Ksh {Number(p.original_price).toLocaleString()}</p>
-                        )}
-                      </div>
-                      {p.category_name && (
-                        <span className="text-[9px] text-gray-400 font-extrabold uppercase tracking-widest">{p.category_name}</span>
-                      )}
-                    </div>
-                  </Link>
+                    <button 
+                      onClick={() => { setSelectedProduct(p); setIsModalOpen(true); }}
+                      className="space-y-2 block w-full text-left"
+                    >
+                       <h4 className="font-bold text-sm text-gray-900 line-clamp-1 uppercase tracking-tight group-hover:text-indigo-600 transition-colors">{p.name}</h4>
+                       <div className="flex items-center gap-1 text-yellow-400">
+                           <Star className="w-3 h-3 fill-current" />
+                           <span className="text-gray-500 text-[10px] font-black">4.9</span>
+                       </div>
+                       <div className="flex items-end justify-between">
+                         <div className="space-y-1">
+                           <p className="text-black font-black text-lg leading-none">Ksh {Number(p.price).toLocaleString()}</p>
+                           {p.original_price && (
+                             <p className="text-[11px] text-gray-400 font-bold line-through">Ksh {Number(p.original_price).toLocaleString()}</p>
+                           )}
+                         </div>
+                         {p.category_name && (
+                           <span className="text-[9px] text-gray-400 font-extrabold uppercase tracking-widest">{p.category_name}</span>
+                         )}
+                       </div>
+                    </button>
                 </div>
               ))}
             </div>

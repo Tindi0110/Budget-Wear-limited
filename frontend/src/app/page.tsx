@@ -27,6 +27,7 @@ import { api } from "@/lib/api";
 import { toast } from "sonner";
 import CountdownTimer from "@/components/CountdownTimer";
 import Header from "@/components/Header";
+import ProductModal from "@/components/ProductModal";
 import { useBranch } from "@/lib/BranchContext";
 
 interface Product {
@@ -38,7 +39,7 @@ interface Product {
   branch_name?: string;
   category_name?: string;
   images?: Array<{ image_url: string }>;
-  stock?: number;
+  stock: number;
 }
 
 interface Category {
@@ -82,6 +83,8 @@ export default function Home() {
   const [isLoading, setIsLoading] = useState(true);
   const [activeCategory, setActiveCategory] = useState<string | null>(null);
   const [currentAdIndex, setCurrentAdIndex] = useState(0);
+  const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   // Advert Carousel Logic
   useEffect(() => {
@@ -126,6 +129,11 @@ export default function Home() {
   return (
     <div className="min-h-screen bg-gray-50/50">
       <Header />
+      <ProductModal 
+        product={selectedProduct} 
+        isOpen={isModalOpen} 
+        onClose={() => setIsModalOpen(false)} 
+      />
       {isLoading ? (
         <div className="min-h-screen flex items-center justify-center">
           <Loader2 className="w-12 h-12 text-indigo-600 animate-spin" />
@@ -395,13 +403,16 @@ export default function Home() {
                   {featuredProducts.map((p) => (
                     <div key={p.id} className="bg-white rounded-[2rem] p-4 border border-gray-100 shadow-sm hover:shadow-xl transition-all group group-hover:-translate-y-1">
                        <div className="aspect-[3/4] bg-gray-50 rounded-2xl overflow-hidden mb-4 relative border border-gray-50">
-                           <Link href={`/products/${p.id}`} className="block w-full h-full">
-                              {p.images?.[0] ? (
-                                <img src={p.images[0].image_url} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" alt={p.name} />
-                              ) : (
-                                <div className="w-full h-full flex items-center justify-center"><Package className="w-10 h-10 text-gray-200" /></div>
-                              )}
-                           </Link>
+                           <button 
+                             onClick={() => { setSelectedProduct(p); setIsModalOpen(true); }}
+                             className="block w-full h-full cursor-pointer"
+                           >
+                               {p.images?.[0] ? (
+                                 <img src={p.images[0].image_url} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" alt={p.name} />
+                               ) : (
+                                 <div className="w-full h-full flex items-center justify-center"><Package className="w-10 h-10 text-gray-200" /></div>
+                               )}
+                           </button>
                           <div className="absolute top-2 left-2 flex flex-col gap-2">
                              {p.branch_name && (
                                <div className="flex items-center gap-1.5 px-2 py-1 bg-black/60 backdrop-blur-md rounded-lg text-white text-[9px] font-bold">
@@ -422,8 +433,11 @@ export default function Home() {
                             <ShoppingBag className="w-5 h-5" />
                           </button>
                        </div>
-                       <Link href={`/products/${p.id}`} className="space-y-2 block">
-                          <h4 className="font-bold text-sm text-gray-900 line-clamp-1 uppercase tracking-tight group-hover:text-indigo-600 transition-colors">{p.name}</h4>
+                        <button 
+                          onClick={() => { setSelectedProduct(p); setIsModalOpen(true); }}
+                          className="space-y-2 block w-full text-left"
+                        >
+                           <h4 className="font-bold text-sm text-gray-900 line-clamp-1 uppercase tracking-tight group-hover:text-indigo-600 transition-colors">{p.name}</h4>
                           <div className="flex items-center justify-between">
                             <div>
                                <p className="text-indigo-600 font-black text-lg leading-none">Ksh {p.price.toLocaleString()}</p>
@@ -434,9 +448,9 @@ export default function Home() {
                             <div className="flex items-center gap-1 text-yellow-400">
                                <Star className="w-3 h-3 fill-current" />
                                <span className="text-gray-500 text-[10px] font-black">4.9</span>
-                            </div>
+                             </div>
                           </div>
-                       </Link>
+                       </button>
                     </div>
                   ))}
                </div>

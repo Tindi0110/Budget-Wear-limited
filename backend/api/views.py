@@ -38,14 +38,27 @@ class ProductViewSet(viewsets.ModelViewSet):
     search_fields = ['name', 'description']
 
     def get_queryset(self):
-        queryset = Product.objects.all()
+        queryset = Product.objects.all().prefetch_related('images')
         branch_id = self.request.query_params.get('branch')
-        category = self.request.query_params.get('category')
-        
+        category_name = self.request.query_params.get('category')
+        subcategory = self.request.query_params.get('subcategory')
+
         if branch_id:
             queryset = queryset.filter(branch_id=branch_id)
-        if category:
-            queryset = queryset.filter(category__name=category)
+        if category_name:
+            queryset = queryset.filter(category__name=category_name)
+        if subcategory:
+            # Simple substring match for subcategory in name or description if no explicit field
+            # Or if it's a specific tag. Let's assume it matches category name for now 
+            # or we can just filter by category and then refined search.
+            # The user requested specific baby categories: Gifts, Pacifiers, etc.
+            # These are likely just categories or part of the name.
+            from django.db.models import Q
+            queryset = queryset.filter(
+                Q(name__icontains=subcategory) | 
+                Q(description__icontains=subcategory) |
+                Q(category__name__icontains=subcategory)
+            )
             
         return queryset
 
