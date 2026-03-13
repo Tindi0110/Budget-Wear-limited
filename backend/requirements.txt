@@ -7,6 +7,5 @@ dj-database-url==2.1.0
 gunicorn==21.2.0
 djangorestframework-simplejwt==5.3.1
 whiteNoise==6.6.0
-
-
+requests
  
