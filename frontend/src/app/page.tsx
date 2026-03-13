@@ -97,13 +97,13 @@ export default function Home() {
     const loadData = async () => {
       try {
         setIsLoading(true);
-        const url = activeBranch ? `?branch=${activeBranch.id}` : "";
+        const urlBase = activeBranch ? `?branch=${activeBranch.id}` : "";
         const [prodData, catData, advData, branchData, flashData] = await Promise.all([
-          api.get(`/products/${url}`),
+          api.get(`/products/${urlBase}`),
           api.get("/categories/"),
           api.get("/adverts/"),
           api.get("/branches/"),
-          api.get("/flash-sales/").catch(() => []) // Graceful fail if migration not run
+          api.get("/flash-sales/").catch(() => [])
         ]);
         setProducts(prodData);
         setCategories(catData);
@@ -117,15 +117,10 @@ export default function Home() {
       }
     };
     loadData();
-  }, []);
-
-  // Filter products by active branch if selected
-  const displayedProducts = activeBranch 
-    ? products.filter(p => p.branch_name === activeBranch.name)
-    : products;
+  }, [activeBranch]);
 
   const featuredAd = adverts[0];
-  const featuredProducts = displayedProducts.slice(0, 10);
+  const featuredProducts = products.slice(0, 10);
   const activeFlashSale = flashSales[0];
 
   return (

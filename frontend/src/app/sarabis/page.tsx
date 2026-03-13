@@ -19,6 +19,7 @@ import Link from "next/link";
 import { api } from "@/lib/api";
 import { useCart } from "@/lib/CartContext";
 import Header from "@/components/Header";
+import { useBranch } from "@/lib/BranchContext";
 
 interface Branch {
   id: string;
@@ -50,6 +51,8 @@ interface Product {
   name: string;
   price: number;
   original_price?: number;
+  branch_name?: string;
+  category_name?: string;
   images?: Array<{ image_url: string }>;
 }
 
@@ -61,19 +64,25 @@ export default function SarabisPage() {
   const [currentAdIndex, setCurrentAdIndex] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
   const { addItem } = useCart();
+  const { activeBranch } = useBranch();
   const flashScrollRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const fetchData = async () => {
       try {
+        const urlBase = activeBranch ? `?branch=${activeBranch.id}` : "";
         const [branchData, productData, advertData, flashSaleData] = await Promise.all([
           api.get("/branches/"),
-          api.get("/products?category=Baby Shop"),
+          api.get(`/products/${urlBase}`),
           api.get("/adverts/"),
           api.get("/flash-sales/")
         ]);
         setBranches(branchData.filter((b: Branch) => b.type === 'baby_shop'));
-        setProducts(productData.slice(0, 8));
+        setProducts(productData.filter((p: Product) => 
+          (p.category_name?.toLowerCase().includes("kids")) || 
+          (p.category_name?.toLowerCase().includes("baby")) ||
+          (p.category_name?.toLowerCase().includes("baby shop"))
+        ).slice(0, 8));
         setAdverts(advertData.filter((a: Advert) => a.is_active));
         setFlashSales(flashSaleData);
       } catch (error) {
@@ -83,7 +92,7 @@ export default function SarabisPage() {
       }
     };
     fetchData();
-  }, []);
+  }, [activeBranch]);
 
   useEffect(() => {
     if (adverts.length <= 1) return;

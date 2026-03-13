@@ -57,9 +57,9 @@ export default function ProductsPage() {
     const loadData = async () => {
       try {
         setIsLoading(true);
-        const url = activeBranch ? `/products/?branch=${activeBranch.id}` : "/products/";
+        const urlBase = activeBranch ? `?branch=${activeBranch.id}` : "";
         const [prods, cats, brs] = await Promise.all([
-          api.get(url),
+          api.get(`/products/${urlBase}`),
           api.get("/categories/"),
           api.get("/branches/"),
         ]);
@@ -78,10 +78,10 @@ export default function ProductsPage() {
   const filtered = products.filter((p) => {
     const matchSearch =
       p.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      (p.category_name?.toLowerCase() ?? "").includes(searchQuery.toLowerCase());
-    const matchCat = !selectedCategory || p.category_name === selectedCategory;
-    const matchBranch = !selectedBranch || p.branch_name === selectedBranch;
-    return matchSearch && matchCat && matchBranch;
+      p.description.toLowerCase().includes(searchQuery.toLowerCase());
+    const matchCategory = !selectedCategory || p.category_name === selectedCategory;
+    // Removed matchBranch because it is now handled server-side
+    return matchSearch && matchCategory;
   });
 
   const Skeleton = () => (
