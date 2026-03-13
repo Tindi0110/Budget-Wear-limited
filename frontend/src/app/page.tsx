@@ -97,8 +97,9 @@ export default function Home() {
     const loadData = async () => {
       try {
         setIsLoading(true);
+        const url = activeBranch ? `?branch=${activeBranch.id}` : "";
         const [prodData, catData, advData, branchData, flashData] = await Promise.all([
-          api.get("/products/"),
+          api.get(`/products/${url}`),
           api.get("/categories/"),
           api.get("/adverts/"),
           api.get("/branches/"),
@@ -214,12 +215,12 @@ export default function Home() {
                                className={`absolute inset-0 transition-opacity duration-1000 ${idx === currentAdIndex ? 'opacity-100 z-10' : 'opacity-0 z-0'}`}
                              >
                                 <div className="absolute inset-0 bg-gradient-to-r from-black/80 via-black/40 to-transparent z-10" />
-                                <img 
-                                 src="budget_wear_hero_bg_1773261225170.png" 
-                                 className="absolute inset-0 w-full h-full object-cover opacity-60 mix-blend-overlay group-hover:scale-105 transition-transform duration-[10s]" 
-                                 alt="Background" 
-                                />
-                                <img src={ad.image} className="w-full h-full object-cover" alt={ad.title} />
+                                 <img 
+                                  src="https://images.unsplash.com/photo-1441986300917-64674bd600d8?q=80&w=2070&auto=format&fit=crop" 
+                                  className="absolute inset-0 w-full h-full object-cover opacity-40 mix-blend-overlay group-hover:scale-105 transition-transform duration-[10s]" 
+                                  alt="Premium Store Background" 
+                                 />
+                                 <img src={ad.image} className="w-full h-full object-cover" alt={ad.title} />
                                 <div className="absolute inset-0 z-20 p-8 md:p-12 flex flex-col justify-center max-w-md space-y-4">
                                    <div className="inline-flex items-center gap-2 px-3 py-1 bg-indigo-600 text-white rounded-full text-[10px] font-black uppercase tracking-widest w-fit">
                                       <Zap className="w-3.5 h-3.5 fill-current" /> LIMITED TIME
@@ -333,16 +334,18 @@ export default function Home() {
                
                 <div className="p-8 overflow-x-auto custom-scrollbar" ref={flashScrollRef}>
                   <div className="flex gap-6 pb-4">
-                     {featuredProducts.length > 0 ? featuredProducts.map((p) => {
+                     {activeFlashSale && activeFlashSale.products?.length > 0 ? activeFlashSale.products.map((p) => {
                        const discount = p.discount_percentage || (p.original_price ? Math.round(((p.original_price - p.price) / p.original_price) * 100) : null);
                        return (
                         <div key={p.id} className="min-w-[200px] w-[200px] group cursor-pointer">
                            <div className="aspect-square bg-gray-50 rounded-2xl overflow-hidden mb-4 relative shadow-sm border border-gray-100">
-                             {p.images?.[0] ? (
-                               <img src={p.images[0].image_url} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" alt={p.name} />
-                             ) : (
-                               <div className="w-full h-full flex items-center justify-center"><Package className="w-10 h-10 text-gray-200" /></div>
-                             )}
+                             <Link href={`/products/${p.id}`} className="block w-full h-full">
+                               {p.images?.[0] ? (
+                                 <img src={p.images[0].image_url} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" alt={p.name} />
+                               ) : (
+                                 <div className="w-full h-full flex items-center justify-center"><Package className="w-10 h-10 text-gray-200" /></div>
+                               )}
+                             </Link>
                              {discount && (
                                <div className="absolute top-2 right-2 bg-orange-100 text-orange-600 px-2 py-1 rounded-lg text-[10px] font-black">
                                  -{discount}%
@@ -397,11 +400,13 @@ export default function Home() {
                   {featuredProducts.map((p) => (
                     <div key={p.id} className="bg-white rounded-[2rem] p-4 border border-gray-100 shadow-sm hover:shadow-xl transition-all group group-hover:-translate-y-1">
                        <div className="aspect-[3/4] bg-gray-50 rounded-2xl overflow-hidden mb-4 relative border border-gray-50">
-                          {p.images?.[0] ? (
-                            <img src={p.images[0].image_url} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" alt={p.name} />
-                          ) : (
-                            <div className="w-full h-full flex items-center justify-center"><Package className="w-10 h-10 text-gray-200" /></div>
-                          )}
+                           <Link href={`/products/${p.id}`} className="block w-full h-full">
+                              {p.images?.[0] ? (
+                                <img src={p.images[0].image_url} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" alt={p.name} />
+                              ) : (
+                                <div className="w-full h-full flex items-center justify-center"><Package className="w-10 h-10 text-gray-200" /></div>
+                              )}
+                           </Link>
                           <div className="absolute top-2 left-2 flex flex-col gap-2">
                              {p.branch_name && (
                                <div className="flex items-center gap-1.5 px-2 py-1 bg-black/60 backdrop-blur-md rounded-lg text-white text-[9px] font-bold">

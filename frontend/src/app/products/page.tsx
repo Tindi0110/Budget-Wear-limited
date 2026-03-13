@@ -6,6 +6,8 @@ import { ShoppingBag, Search, MapPin, Star, ArrowLeft, Package, SlidersHorizonta
 import { useCart } from "@/lib/CartContext";
 import { api } from "@/lib/api";
 import { toast } from "sonner";
+import { useBranch } from "@/lib/BranchContext";
+import Header from "@/components/Header";
 
 interface Product {
   id: string;
@@ -41,27 +43,37 @@ export default function ProductsPage() {
   const [filtersOpen, setFiltersOpen] = useState(false);
 
   const { addItem, count } = useCart();
+  const { activeBranch } = useBranch();
+  const searchParams = typeof window !== "undefined" ? new URLSearchParams(window.location.search) : null;
+  const initialCategory = searchParams?.get("category");
+
+  useEffect(() => {
+    if (initialCategory) {
+      setSelectedCategory(initialCategory);
+    }
+  }, [initialCategory]);
 
   useEffect(() => {
     const loadData = async () => {
       try {
         setIsLoading(true);
+        const url = activeBranch ? `/products/?branch=${activeBranch.id}` : "/products/";
         const [prods, cats, brs] = await Promise.all([
-          api.get("/products/"),
+          api.get(url),
           api.get("/categories/"),
           api.get("/branches/"),
         ]);
         setProducts(prods);
         setCategories(cats);
         setBranches(brs);
-      } catch {
-        toast.error("Failed to load products");
+      } catch (error) {
+        toast.error("Failed to load data");
       } finally {
         setIsLoading(false);
       }
     };
     loadData();
-  }, []);
+  }, [activeBranch]);
 
   const filtered = products.filter((p) => {
     const matchSearch =
@@ -189,17 +201,19 @@ export default function ProductsPage() {
               {filtered.map((p) => (
                 <div key={p.id} className="bg-white rounded-3xl p-5 border border-gray-100 shadow-sm hover:shadow-2xl transition-all group flex flex-col h-full">
                   <div className="aspect-[3/4] bg-gray-50 rounded-2xl overflow-hidden mb-6 relative border border-gray-50 flex-shrink-0">
-                    {p.images && p.images.length > 0 ? (
-                      <img 
-                        src={p.images[0].image_url} 
-                        alt={p.name}
-                        className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
-                      />
-                    ) : (
-                      <div className="w-full h-full flex items-center justify-center">
-                        <Package className="w-12 h-12 text-gray-200" />
-                      </div>
-                    )}
+                    <Link href={`/products/${p.id}`} className="block w-full h-full">
+                      {p.images && p.images.length > 0 ? (
+                        <img 
+                          src={p.images[0].image_url} 
+                          alt={p.name}
+                          className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+                        />
+                      ) : (
+                        <div className="w-full h-full flex items-center justify-center">
+                          <Package className="w-12 h-12 text-gray-200" />
+                        </div>
+                      )}
+                    </Link>
                     
                     <div className="absolute top-3 left-3 flex flex-col gap-2">
                        <div className="flex items-center gap-1.5 px-3 py-1.5 bg-black/60 backdrop-blur-md rounded-xl text-white text-[10px] font-black uppercase tracking-widest shadow-lg">

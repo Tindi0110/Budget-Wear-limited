@@ -18,6 +18,7 @@ import {
 import { useCart } from "@/lib/CartContext";
 import { useBranch } from "@/lib/BranchContext";
 import { api } from "@/lib/api";
+import CartOverlay from "./CartOverlay";
 
 interface Product {
   id: string;
@@ -43,6 +44,7 @@ export default function Header({ theme = 'default' }: { theme?: 'default' | 'pin
   const [categories, setCategories] = useState<Category[]>([]);
   const pathname = usePathname();
   const [isBranchOpen, setIsBranchOpen] = useState(false);
+  const [isCartOpen, setIsCartOpen] = useState(false);
 
   useEffect(() => {
     api.get("/products/").then(setProducts).catch(console.error);
@@ -165,14 +167,17 @@ export default function Header({ theme = 'default' }: { theme?: 'default' | 'pin
                 <Heart className="w-6 h-6" />
               </Link>
 
-              <Link href="/cart" className="relative p-2 text-gray-400 hover:text-black transition-colors">
+              <button 
+                onClick={() => setIsCartOpen(true)} 
+                className="relative p-2 text-gray-400 hover:text-black transition-colors"
+              >
                 <ShoppingBag className="w-6 h-6" />
                 {count > 0 && (
                   <span className={`absolute top-0 right-0 w-5 h-5 ${bgBadgeColor} text-white text-[10px] font-black rounded-full flex items-center justify-center border-2 border-white animate-bounce`}>
                     {count}
                   </span>
                 )}
-              </Link>
+              </button>
                <button 
                 onClick={() => setIsMenuOpen(!isMenuOpen)}
                 className="xl:hidden p-2 hover:bg-gray-100 rounded-xl transition-colors"
@@ -271,6 +276,8 @@ export default function Header({ theme = 'default' }: { theme?: 'default' | 'pin
           </div>
         </div>
       )}
+      {/* Cart Overlay */}
+      <CartOverlay isOpen={isCartOpen} onClose={() => setIsCartOpen(false)} />
     </>
   );
 }

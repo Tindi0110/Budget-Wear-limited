@@ -37,6 +37,18 @@ class ProductViewSet(viewsets.ModelViewSet):
     filter_backends = [filters.SearchFilter]
     search_fields = ['name', 'description']
 
+    def get_queryset(self):
+        queryset = Product.objects.all()
+        branch_id = self.request.query_params.get('branch')
+        category = self.request.query_params.get('category')
+        
+        if branch_id:
+            queryset = queryset.filter(branch_id=branch_id)
+        if category:
+            queryset = queryset.filter(category__name=category)
+            
+        return queryset
+
 class OrderViewSet(viewsets.ModelViewSet):
     queryset = Order.objects.all().order_by('-created_at')
     serializer_class = OrderSerializer

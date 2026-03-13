@@ -16,6 +16,8 @@ import {
 import { api } from "@/lib/api";
 import { useCart } from "@/lib/CartContext";
 import { toast } from "sonner";
+import Header from "@/components/Header";
+import { useBranch } from "@/lib/BranchContext";
 
 interface Product {
   id: string;
@@ -29,17 +31,20 @@ interface Product {
 export default function BabyShop() {
   const [products, setProducts] = useState<Product[]>([]);
   const [isLoading, setIsLoading] = useState(true);
-  const { addItem, count } = useCart();
+  const { addItem } = useCart();
+  const { activeBranch } = useBranch();
 
   useEffect(() => {
     const loadBabyProducts = async () => {
       try {
         setIsLoading(true);
-        // Assuming 'Kids' or 'Baby' is a category name or handled via filtering
-        const allProducts = await api.get("/products/");
+        // Using activeBranch for server-side filtering
+        const url = activeBranch ? `/products/?branch=${activeBranch.id}` : "/products/";
+        const allProducts = await api.get(url);
         const babyProds = allProducts.filter((p: Product) => 
-          (p.category_name?.toLowerCase() === "kids") || 
-          (p.category_name?.toLowerCase() === "baby")
+          (p.category_name?.toLowerCase().includes("kids")) || 
+          (p.category_name?.toLowerCase().includes("baby")) ||
+          (p.category_name?.toLowerCase().includes("baby shop"))
         );
         setProducts(babyProds);
       } catch (err) {
@@ -49,35 +54,11 @@ export default function BabyShop() {
       }
     };
     loadBabyProducts();
-  }, []);
+  }, [activeBranch]);
 
   return (
     <div className="min-h-screen bg-white">
-      {/* Navigation */}
-      <nav className="fixed top-0 w-full z-50 bg-white/80 backdrop-blur-xl border-b border-pink-50">
-        <div className="max-w-7xl mx-auto px-4 h-20 flex items-center justify-between">
-          <Link href="/" className="flex items-center gap-3 group">
-            <div className="w-10 h-10 bg-pink-600 rounded-xl flex items-center justify-center transition-transform group-hover:scale-110">
-              <ArrowLeft className="text-white w-6 h-6" />
-            </div>
-            <span className="text-sm font-black tracking-tight text-gray-500 group-hover:text-black transition-colors">BACK TO MAIN</span>
-          </Link>
-
-          <div className="flex items-center gap-2">
-            <Baby className="w-6 h-6 text-pink-600" />
-            <span className="text-2xl font-black tracking-tighter text-black uppercase">SARABIS BABY SHOP</span>
-          </div>
-
-          <div className="flex items-center gap-6">
-            <Link href="/cart" className="relative p-2 text-gray-400 hover:text-pink-600 transition-colors">
-              <ShoppingBag className="w-6 h-6" />
-              {count > 0 && (
-                <span className="absolute top-0 right-0 w-5 h-5 bg-pink-600 text-white text-[10px] font-black rounded-full flex items-center justify-center border-2 border-white animate-in zoom-in-50 duration-300">{count}</span>
-              )}
-            </Link>
-          </div>
-        </div>
-      </nav>
+      <Header theme="pink" />
 
       <main className="pt-32 pb-20 px-4">
         {/* Hero Banner */}
@@ -156,13 +137,15 @@ export default function BabyShop() {
                 {products.map((p) => (
                   <div key={p.id} className="group cursor-pointer">
                     <div className="aspect-[3/4] bg-gray-50 rounded-[2.5rem] overflow-hidden mb-6 relative shadow-sm transition-all duration-500 hover:shadow-xl hover:shadow-pink-50">
-                      {p.images && p.images[0] ? (
-                        <img src={p.images[0].image_url} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" alt={p.name} />
-                      ) : (
-                        <div className="w-full h-full flex items-center justify-center">
-                          <Package className="w-12 h-12 text-pink-100" />
-                        </div>
-                      )}
+                      <Link href={`/products/${p.id}`} className="block w-full h-full">
+                        {p.images && p.images[0] ? (
+                          <img src={p.images[0].image_url} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" alt={p.name} />
+                        ) : (
+                          <div className="w-full h-full flex items-center justify-center">
+                            <Package className="w-12 h-12 text-pink-100" />
+                          </div>
+                        )}
+                      </Link>
                       <button 
                         onClick={() => addItem({ 
                           id: p.id, 

@@ -205,11 +205,13 @@ export default function SarabisPage() {
                         return (
                          <div key={p.id} className="min-w-[200px] w-[200px] group cursor-pointer">
                             <div className="aspect-square bg-pink-50/30 rounded-2xl overflow-hidden mb-4 relative shadow-sm border border-pink-50">
-                              {p.images?.[0] ? (
-                                <img src={p.images[0].image_url} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" alt={p.name} />
-                              ) : (
-                                <div className="w-full h-full flex items-center justify-center"><Baby className="w-10 h-10 text-pink-200" /></div>
-                              )}
+                               <Link href={`/products/${p.id}`} className="block w-full h-full">
+                                {p.images?.[0] ? (
+                                  <img src={p.images[0].image_url} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" alt={p.name} />
+                                ) : (
+                                  <div className="w-full h-full flex items-center justify-center"><Baby className="w-10 h-10 text-pink-200" /></div>
+                                )}
+                               </Link>
                               {discount && (
                                 <div className="absolute top-2 right-2 bg-pink-100 text-pink-600 px-2 py-1 rounded-lg text-[10px] font-black">
                                   -{discount}%
@@ -284,13 +286,15 @@ export default function SarabisPage() {
            
            <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
               {products.map((p) => (
-                <div key={p.id} className="bg-white p-4 rounded-[2rem] border border-pink-50 shadow-sm hover:shadow-xl transition-all group">
-                   <div className="aspect-square bg-pink-50/30 rounded-2xl overflow-hidden mb-4 relative">
-                      {p.images?.[0] ? (
-                        <img src={p.images[0].image_url} className="w-full h-full object-cover transition-transform group-hover:scale-110" alt={p.name} />
-                      ) : (
-                        <Baby className="w-12 h-12 text-pink-100 absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2" />
-                      )}
+                 <div key={p.id} className="bg-white p-4 rounded-[2rem] border border-pink-50 shadow-sm hover:shadow-xl transition-all group">
+                    <div className="aspect-square bg-pink-50/30 rounded-2xl overflow-hidden mb-4 relative">
+                       <Link href={`/products/${p.id}`} className="block w-full h-full">
+                          {p.images?.[0] ? (
+                            <img src={p.images[0].image_url} className="w-full h-full object-cover transition-transform group-hover:scale-110" alt={p.name} />
+                          ) : (
+                            <Baby className="w-12 h-12 text-pink-100 absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2" />
+                          )}
+                       </Link>
                       <button 
                          onClick={() => addItem({ ...p, image: p.images?.[0]?.image_url })}
                          className="absolute bottom-3 right-3 p-3 bg-white text-pink-500 rounded-xl shadow-lg opacity-0 group-hover:opacity-100 translate-y-2 group-hover:translate-y-0 transition-all"

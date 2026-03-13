@@ -1,5 +1,6 @@
 from rest_framework import serializers
 from .models import User, Branch, Category, Product, ProductImage, Order, OrderItem, Wishlist, Advertisement, FlashSale
+from .mpesa import initiate_stk_push
 
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
@@ -72,12 +73,43 @@ class OrderItemSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 class OrderSerializer(serializers.ModelSerializer):
-    items = OrderItemSerializer(many=True, read_only=True)
+    items = OrderItemSerializer(many=True, required=False)
     branch_name = serializers.ReadOnlyField(source='branch.name')
 
     class Meta:
         model = Order
         fields = '__all__'
+
+    def create(self, validated_data):
+        items_data = self.context['request'].data.get('items', [])
+        # If branch is not provided, use the first available branch or handle as needed
+        if 'branch' not in validated_data:
+            from .models import Branch
+            branch = Branch.objects.first()
+            if branch:
+                validated_data['branch'] = branch
+        
+        order = Order.objects.create(**validated_data)
+        
+        for item_data in items_data:
+            try:
+                product = Product.objects.get(id=item_data['product'])
+                OrderItem.objects.create(
+                    order=order,
+                    product=product,
+                    quantity=item_data['quantity'],
+                    price=item_data['price']
+                )
+            except Product.DoesNotExist:
+                continue
+
+        # Trigger STK Push
+        # We need a phone number. In the frontend it's passed as customer_phone
+        phone = self.context['request'].data.get('customer_phone')
+        if phone:
+            initiate_stk_push(phone, order.total, str(order.id))
+            
+        return order
 
 class WishlistSerializer(serializers.ModelSerializer):
     product_details = ProductSerializer(source='product', read_only=True)
